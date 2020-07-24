@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="dist/resizable.bundled.js" type="module"></script>
+  </head>
+  <body>
+    <lit-resizable style="width: 50px; height: 50px;">
+      <div
+        style="
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          margin: auto;
+          background-color: aqua;
+        "
+      ></div>
+    </lit-resizable>
+
+    <div
+      style="
+        width: 500px;
+        height: 500px;
+        background-color: orange;
+        position: relative;
+      "
+    >
+      <lit-draggable>
+        <div style="width: 50px; height: 50px; background-color: aqua;"></div>
+      </lit-draggable>
+    </div>
+
+    <div
+      style="
+        width: 500px;
+        height: 500px;
+        background-color: red;
+        position: relative;
+      "
+    >
+      <lit-resizable style="width: 50px; height: 50px; position: absolute;">
+        <lit-draggable
+          style="
+            margin: auto;
+            background-color: aqua;
+            display: block;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </lit-draggable>
+      </lit-resizable>
+    </div>
+
+    <div
+      style="
+        width: 500px;
+        height: 500px;
+        background-color: purple;
+        position: relative;
+      "
+    >
+      <lit-draggable>
+        <lit-resizable style="width: 50px; height: 50px;">
+          <div
+            style="
+              position: absolute;
+              top: 0;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              margin: auto;
+              background-color: aqua;
+            "
+          ></div>
+        </lit-resizable>
+      </lit-draggable>
+    </div>
+
+    <lit-grid-layout style="width: 300px;">
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: aqua;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: red;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: blue;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: green;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: orange;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: purple;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: brown;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: black;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: thistle;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: gray;"
+      ></div>
+      <div
+        class="lit-grid-item"
+        style="width: 50px; height: 50px; background-color: rosybrown;"
+      ></div>
+    </lit-grid-layout>
+  </body>
+</html>

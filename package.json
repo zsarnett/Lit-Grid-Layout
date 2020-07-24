@@ -1,0 +1,34 @@
+{
+  "name": "lit-grid-layout",
+  "version": "1.0.0",
+  "description": "A Grid Layout for Lit Element",
+  "main": "resizable.bundles.js",
+  "scripts": {
+    "build": "npm run build-ts && npm run build-rollup",
+    "build-ts": "tsc",
+    "build-rollup": "rollup -c",
+    "watch": "npm run lint && npm run build-ts && npm run watch-rollup",
+    "watch-rollup": "rollup -cw",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix"
+  },
+  "author": "Zack Arnett",
+  "license": "ISC",
+  "dependencies": {
+    "lit-element": "^2.3.1",
+    "lit-html": "^1.2.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^5.0.2",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5",
+    "rollup": "^2.22.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^6.1.0",
+    "ts-lit-plugin": "^1.2.0",
+    "typescript": "^3.9.7"
+  }
+}
