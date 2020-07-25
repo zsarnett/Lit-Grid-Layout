@@ -1,17 +1,19 @@
 export interface LayoutItem {
-  w: number;
-  h: number;
-  x: number;
-  y: number;
-  i: string;
+  width: number;
+  height: number;
+  posX: number;
+  posY: number;
+  key: string;
 }
+
+export type Layout = Array<LayoutItem>;
 
 export interface LayoutItemElement extends HTMLElement {
   key: string;
   grid: {
-    w: number;
-    h: number;
-    x: number;
-    y: number;
+    width: number;
+    height: number;
+    posX: number;
+    posY: number;
   };
 }

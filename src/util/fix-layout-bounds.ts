@@ -10,14 +10,14 @@ export const fixLayoutBounds = (
   for (const item of layout) {
     // Out of bounds right
     // set the x to be against the right side
-    if (item.x + item.w > cols) {
-      item.x = cols - item.w;
+    if (item.posX + item.width > cols) {
+      item.posX = cols - item.width;
     }
 
     // Out of bounds left
     // set x to be against the left side
-    if (item.x < 0) {
-      item.x = 0;
+    if (item.posX < 0) {
+      item.posX = 0;
     }
   }
 

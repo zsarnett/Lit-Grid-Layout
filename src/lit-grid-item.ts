@@ -18,7 +18,7 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Number }) public posY!: number;
 
-  @property({ type: Number }) public key!: number;
+  @property() public key!: string;
 
   @property({ type: Number }) public rowH!: number;
 
