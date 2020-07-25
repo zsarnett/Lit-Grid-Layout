@@ -7,7 +7,6 @@ import {
   css,
   property,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
 
 @customElement("lit-grid-item")
 export class LitGridItem extends LitElement {
@@ -19,27 +18,35 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Number }) public posY!: number;
 
-  @property({ type: Number }) public index!: number;
+  @property({ type: Number }) public key!: number;
+
+  @property({ type: Number }) public rowH!: number;
+
+  @property({ type: Number }) public cols!: number;
+
+  @property({ type: Number }) public containerW!: number;
+
+  protected updated(): void {
+    this.style.width = `${this.width * (this.containerW / this.cols)}px`;
+    this.style.height = `${this.height * this.rowH}px`;
+    this.style.top = `${this.posY * this.rowH}px`;
+    this.style.left = `${this.posX * (this.containerW / this.cols)}px`;
+  }
 
   protected render(): TemplateResult {
-    return html`
-      <slot
-        class="wrapper"
-        style=${styleMap({
-          width: `${this.width}px`,
-          height: `${this.height}px`,
-          top: `${this.posY}px`,
-          left: `${this.posX}px`,
-        })}
-      ></slot>
-    `;
+    return html`<slot></slot>`;
   }
 
   static get styles(): CSSResult {
     return css`
-      slot {
+      :host {
         display: block;
         position: absolute;
+      }
+      slot {
+        width: 100%;
+        position: relative;
+        height: 100%;
       }
     `;
   }
