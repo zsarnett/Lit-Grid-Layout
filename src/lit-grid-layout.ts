@@ -27,6 +27,8 @@ export class LitGridLayout extends LitElement {
 
   public cols = 12;
 
+  public margin: [number, number] = [10, 10];
+
   @internalProperty() private _currentLayout: Layout = [];
 
   // Get items supplied by property and from any children
@@ -88,9 +90,10 @@ export class LitGridLayout extends LitElement {
             .posY=${item.posY}
             .posX=${item.posX}
             .key=${item.key}
-            .parentWidth=${parseInt(this.style.width, 10) || this.clientWidth}
+            .parentWidth=${this.clientWidth}
             .columns=${this.cols}
             .rowHeight=${this.rowHeight}
+            .margin=${this.margin}
           >
             ${element}
           </lit-grid-item>

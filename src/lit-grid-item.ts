@@ -24,26 +24,43 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Number }) public parentWidth!: number;
 
+  @property({ type: Array }) public margin!: [number, number];
+
   @property() public key!: string;
 
   protected updated(): void {
     this.style.setProperty(
       "--item-width",
-      `${this.width * (this.parentWidth / this.columns)}px`
+      `${
+        this.width * this._getColumnWidth() +
+        Math.max(0, this.width - 1) * this.margin[0]
+      }px`
     );
     this.style.setProperty(
       "--item-height",
-      `${this.height * this.rowHeight}px`
+      `${
+        this.height * this.rowHeight +
+        Math.max(0, this.height - 1) * this.margin[1]
+      }px`
     );
     this.style.setProperty(
       "--item-left",
-      `${this.posX * (this.parentWidth / this.columns)}px`
+      `${Math.round(this.posX * (this._getColumnWidth() + this.margin[0]))}px`
     );
-    this.style.setProperty("--item-top", `${this.posY * this.rowHeight}px`);
+    this.style.setProperty(
+      "--item-top",
+      `${Math.round(this.posY * (this.rowHeight + this.margin[1]))}px`
+    );
   }
 
   protected render(): TemplateResult {
     return html`<slot></slot>`;
+  }
+
+  private _getColumnWidth(): number {
+    return (
+      (this.parentWidth - this.margin[0] * (this.columns - 1)) / this.columns
+    );
   }
 
   static get styles(): CSSResult {
