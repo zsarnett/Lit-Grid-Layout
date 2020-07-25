@@ -7,7 +7,7 @@
     <script src="dist/lit-grid-layout.bundled.js" type="module"></script>
   </head>
   <body>
-    <lit-resizable style="width: 50px; height: 50px;">
+    <!-- <lit-resizable style="width: 50px; height: 50px;">
       <div
         style="
           position: absolute;
@@ -79,53 +79,61 @@
           ></div>
         </lit-resizable>
       </lit-draggable>
-    </div>
+    </div> -->
 
-    <lit-grid-layout style="width: 300px;">
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: aqua;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: red;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: blue;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: green;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: orange;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: purple;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: brown;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: black;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: thistle;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: gray;"
-      ></div>
-      <div
-        class="lit-grid-item"
-        style="width: 50px; height: 50px; background-color: rosybrown;"
-      ></div>
-    </lit-grid-layout>
+    <!-- <lit-grid-layout style="width: 300px;">
+      <div class="lit-grid-item" id="1" style="background-color: aqua;"></div>
+      <div class="lit-grid-item" id="2" style="background-color: red;"></div>
+      <div class="lit-grid-item" id="3" style="background-color: blue;"></div>
+      <div class="lit-grid-item" id="4" style="background-color: green;"></div>
+      <div class="lit-grid-item" id="5" style="background-color: orange;"></div>
+      <div class="lit-grid-item" id="6" style="background-color: purple;"></div>
+      <div class="lit-grid-item" id="7" style="background-color: brown;"></div>
+      <div class="lit-grid-item" id="8" style="background-color: black;"></div>
+      <div class="lit-grid-item" id="9" style="background-color: indigo;"></div>
+      <div class="lit-grid-item" id="10" style="background-color: gray;"></div>
+      <div class="lit-grid-item" id="11" style="background-color: tan;"></div>
+    </lit-grid-layout> -->
+
+    <div class="layout" style="padding: 20px;"></div>
+
+    <script>
+      function getRandomColor() {
+        var letters = "0123456789ABCDEF";
+        var color = "#";
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      const el = document.createElement("lit-grid-layout");
+
+      const itemArray = [];
+      const itemElementArray = [];
+
+      for (let i = 0; i < 25; i++) {
+        var y = Math.ceil(Math.random() * 4) + 1;
+        itemArray.push({
+          x: Math.round(Math.random() * 5) * 2,
+          y: Math.floor(i / 6) * y,
+          w: 2,
+          h: y,
+          i: i.toString(),
+        });
+
+        const itemEl = document.createElement("div");
+        itemEl.key = i;
+        itemEl.classList.add("lit-grid-item");
+        itemEl.style.backgroundColor = getRandomColor();
+        itemEl.style.height = "100%";
+        itemEl.style.width = "100%";
+        itemElementArray.push(itemEl);
+      }
+
+      el.layout = itemArray;
+      el.elements = itemElementArray;
+      document.querySelector(".layout").appendChild(el);
+    </script>
   </body>
 </html>

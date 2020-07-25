@@ -5,67 +5,90 @@ import {
   TemplateResult,
   CSSResult,
   css,
+  property,
 } from "lit-element";
+
+import type { LayoutItem, LayoutItemElement } from "./types";
+import { findLayoutBottom } from "./util/find-layout-bottom";
+import { fixLayoutBounds } from "./util/fix-layout-bounds";
+import { condenseLayout } from "./util/condense-layout";
 
 import "./lit-grid-item";
 
-interface LayoutItem {
-  w: number;
-  h: number;
-  x: number;
-  y: number;
-  i: number;
-}
-
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
-  private _layout: LayoutItem[] = [];
+  @property({ type: Array }) public layout: LayoutItem[] = [];
 
-  private _row = 1;
+  @property({ type: Array }) public elements?: LayoutItemElement[];
 
-  private _currentRowWidth = 0;
+  public rowHeight = 30;
 
-  get childrenElements(): HTMLElement[] {
-    return Array.prototype.filter.call(this.children, (e: HTMLElement) =>
-      e.classList.contains("lit-grid-item")
+  public cols = 12;
+
+  get childrenElements(): LayoutItemElement[] {
+    return (
+      this.elements ||
+      Array.prototype.filter.call(this.children, (e: LayoutItemElement) =>
+        e.classList.contains("lit-grid-item")
+      )
     );
   }
 
-  private getGridItem(el: HTMLElement, index: number): TemplateResult {
-    const layoutItem: LayoutItem = {
-      x: 0,
-      y: 0,
-      w: el.clientWidth || parseInt(el.style.width, 10),
-      h: el.clientHeight || parseInt(el.style.height, 10),
-      i: index,
-    };
+  private setupLayout(): void {
+    let layout: LayoutItem[] = [];
 
-    if (this._currentRowWidth + layoutItem.w > this.clientWidth) {
-      this._row++;
-      this._currentRowWidth = 0;
+    // Create new Layout
+    // Iterate over all children and find item in prev layout or create new item
+    for (const element of this.childrenElements) {
+      let layoutItem = this.layout.find(
+        (item) => item.i === element.key.toString()
+      );
+
+      if (!layoutItem) {
+        const itemProps = element.grid || {
+          w: 1,
+          h: 1,
+          x: 0,
+          y: findLayoutBottom(layout),
+        };
+
+        layoutItem = { ...itemProps, i: element.key };
+      }
+
+      layout.push(layoutItem);
     }
 
-    layoutItem.x = this._currentRowWidth;
-    layoutItem.y = (this._row - 1) * layoutItem.h;
-    this._currentRowWidth += layoutItem.w;
+    layout = fixLayoutBounds(layout, this.cols);
+    this.layout = condenseLayout(layout);
+  }
 
-    this._layout.push(layoutItem);
-
-    return html`
-      <lit-grid-item
-        .width=${layoutItem.w}
-        .height=${layoutItem.h}
-        .posX=${layoutItem.x}
-        .posY=${layoutItem.y}
-      >
-        ${el}
-      </lit-grid-item>
-    `;
+  protected firstUpdated(): void {
+    this.setupLayout();
+    this.style.height = `${findLayoutBottom(this.layout) * this.rowHeight}px`;
   }
 
   protected render(): TemplateResult {
+    if (!this.layout?.length) {
+      return html``;
+    }
     return html`
-      ${this.childrenElements.map((el, idx) => this.getGridItem(el, idx))}
+      ${this.childrenElements.map(
+        (element, idx) =>
+          html`
+            <lit-grid-item
+              .width=${this.layout[idx].w}
+              .height=${this.layout[idx].h}
+              .posY=${this.layout[idx].y}
+              .posX=${this.layout[idx].x}
+              .key=${this.layout[idx].i}
+              .containerW=${parseInt(this.style.width, 10) || this.clientWidth}
+              .cols=${this.cols}
+              .rowH=${this.rowHeight}
+            >
+              ${element}
+            </lit-grid-item>
+          `
+      )}
     `;
   }
 
