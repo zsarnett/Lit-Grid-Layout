@@ -89,8 +89,8 @@ export class LitGridLayout extends LitElement {
             .posX=${item.posX}
             .key=${item.key}
             .parentWidth=${parseInt(this.style.width, 10) || this.clientWidth}
-            .cols=${this.cols}
-            .rowH=${this.rowHeight}
+            .columns=${this.cols}
+            .rowHeight=${this.rowHeight}
           >
             ${element}
           </lit-grid-item>
