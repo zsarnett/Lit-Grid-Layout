@@ -52,11 +52,6 @@ export class LitGridItem extends LitElement {
         height: var(--item-height);
         transform: translate(var(--item-left), var(--item-top));
       }
-      slot {
-        width: 100%;
-        position: relative;
-        height: 100%;
-      }
     `;
   }
 }
