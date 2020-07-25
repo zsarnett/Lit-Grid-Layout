@@ -27,10 +27,16 @@ export class LitGridItem extends LitElement {
   @property({ type: Number }) public containerW!: number;
 
   protected updated(): void {
-    this.style.width = `${this.width * (this.containerW / this.cols)}px`;
-    this.style.height = `${this.height * this.rowH}px`;
-    this.style.top = `${this.posY * this.rowH}px`;
-    this.style.left = `${this.posX * (this.containerW / this.cols)}px`;
+    this.style.setProperty(
+      "--item-width",
+      `${this.width * (this.containerW / this.cols)}px`
+    );
+    this.style.setProperty("--item-height", `${this.height * this.rowH}px`);
+    this.style.setProperty(
+      "--item-left",
+      `${this.posX * (this.containerW / this.cols)}px`
+    );
+    this.style.setProperty("--item-top", `${this.posY * this.rowH}px`);
   }
 
   protected render(): TemplateResult {
@@ -42,6 +48,9 @@ export class LitGridItem extends LitElement {
       :host {
         display: block;
         position: absolute;
+        width: var(--item-width);
+        height: var(--item-height);
+        transform: translate(var(--item-left), var(--item-top));
       }
       slot {
         width: 100%;

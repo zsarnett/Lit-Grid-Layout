@@ -95,7 +95,7 @@
       <div class="lit-grid-item" id="11" style="background-color: tan;"></div>
     </lit-grid-layout> -->
 
-    <div class="layout"></div>
+    <div class="layout" style="padding: 20px;"></div>
 
     <script>
       function getRandomColor() {
@@ -108,7 +108,6 @@
       }
 
       const el = document.createElement("lit-grid-layout");
-      el.style.width = "1000px";
 
       const itemArray = [];
       const itemElementArray = [];
@@ -116,7 +115,7 @@
       for (let i = 0; i < 25; i++) {
         var y = Math.ceil(Math.random() * 4) + 1;
         itemArray.push({
-          x: (Math.floor(Math.random() * Math.floor(5)) * 2) % 12,
+          x: Math.round(Math.random() * 5) * 2,
           y: Math.floor(i / 6) * y,
           w: 2,
           h: y,
