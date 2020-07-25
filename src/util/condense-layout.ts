@@ -9,14 +9,18 @@ export const condenseLayout = (layout: LayoutItem[]): LayoutItem[] => {
   const condensedLayout: LayoutItem[] = [];
   for (const item of layout) {
     // Move up while no intersecting another element
-    while (item.y > 0 && !getItemItersect(condensedLayout, item)) {
-      item.y--;
+    while (item.posY > 0 && !getItemItersect(condensedLayout, item)) {
+      item.posY--;
     }
 
     // Move down Item down, if it intersects with another item, move it down as well
     let intersectItem: LayoutItem | undefined;
     while ((intersectItem = getItemItersect(condensedLayout, item))) {
-      resolveIntersection(layout, item, intersectItem.y + intersectItem.h);
+      resolveIntersection(
+        layout,
+        item,
+        intersectItem.posY + intersectItem.height
+      );
     }
 
     condensedLayout.push(item);

@@ -6,24 +6,24 @@ export const resolveIntersection = (
   item: LayoutItem,
   newYPos: number
 ): void => {
-  item.y += 1;
+  item.posY += 1;
   const itemIndex = layout
     .map((layoutItem: LayoutItem) => {
-      return layoutItem.i;
+      return layoutItem.key;
     })
-    .indexOf(item.i);
+    .indexOf(item.key);
 
   for (let i = itemIndex + 1; i < layout.length; i++) {
     const otherItem = layout[i];
 
-    if (otherItem.y > item.y + item.h) {
+    if (otherItem.posY > item.posY + item.height) {
       break;
     }
 
     if (intersects(item, otherItem)) {
-      resolveIntersection(layout, otherItem, newYPos + item.h);
+      resolveIntersection(layout, otherItem, newYPos + item.height);
     }
   }
 
-  item.y = newYPos;
+  item.posY = newYPos;
 };

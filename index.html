@@ -115,24 +115,26 @@
       for (let i = 0; i < 25; i++) {
         var y = Math.ceil(Math.random() * 4) + 1;
         itemArray.push({
-          x: Math.round(Math.random() * 5) * 2,
-          y: Math.floor(i / 6) * y,
-          w: 2,
-          h: y,
-          i: i.toString(),
+          posX: Math.round(Math.random() * 5) * 2,
+          posY: Math.floor(i / 6) * y,
+          width: 2,
+          height: y,
+          key: i.toString(),
         });
 
         const itemEl = document.createElement("div");
-        itemEl.key = i;
+
         itemEl.classList.add("lit-grid-item");
         itemEl.style.backgroundColor = getRandomColor();
         itemEl.style.height = "100%";
         itemEl.style.width = "100%";
+        itemEl.key = i.toString();
+
         itemElementArray.push(itemEl);
       }
 
       el.layout = itemArray;
-      el.elements = itemElementArray;
+      el.items = itemElementArray;
       document.querySelector(".layout").appendChild(el);
     </script>
   </body>
