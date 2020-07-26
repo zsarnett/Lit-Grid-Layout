@@ -73,6 +73,7 @@ export class LitGridLayout extends LitElement {
             .columns=${this.cols}
             .rowHeight=${this.rowHeight}
             .margin=${this.margin}
+            @resize=${this._itemResize}
           >
             ${element}
           </lit-grid-item>
@@ -107,11 +108,35 @@ export class LitGridLayout extends LitElement {
     this._currentLayout = condenseLayout(newLayout);
   }
 
+  private _itemResize(ev: any): void {
+    const { newWidth, newHeight } = ev.detail;
+
+    const itemKey = ev.currentTarget.key;
+
+    const itemIndex = this._currentLayout.findIndex(
+      (item) => item.key === itemKey
+    );
+
+    const itemLayout = this._currentLayout[itemIndex];
+
+    this._currentLayout[itemIndex] = {
+      ...itemLayout,
+      width: newWidth,
+      height: newHeight,
+    };
+
+    this.layout = this._currentLayout;
+  }
+
   static get styles(): CSSResult {
     return css`
       :host {
         display: block;
         position: relative;
+      }
+
+      lit-grid-item {
+        transition: all 200ms;
       }
     `;
   }

@@ -1,13 +1,16 @@
 // Fill in any gaps in the LayoutItem array
 
-import type { LayoutItem } from "../types";
+import type { LayoutItem, Layout } from "../types";
 import { getItemItersect } from "./get-item-intersect";
 import { resolveIntersection } from "./resolve-intersection";
+import { sortLayout } from "./sort-layout";
 
 // Return LayoutItem Array
-export const condenseLayout = (layout: LayoutItem[]): LayoutItem[] => {
-  const condensedLayout: LayoutItem[] = [];
-  for (const item of layout) {
+export const condenseLayout = (layout: Layout): Layout => {
+  const condensedLayout: Layout = [];
+  const returnLayout: Layout = [];
+  const sortedLayout: Layout = sortLayout(layout);
+  for (const item of sortedLayout) {
     // Move up while no intersecting another element
     while (item.posY > 0 && !getItemItersect(condensedLayout, item)) {
       item.posY--;
@@ -17,14 +20,16 @@ export const condenseLayout = (layout: LayoutItem[]): LayoutItem[] => {
     let intersectItem: LayoutItem | undefined;
     while ((intersectItem = getItemItersect(condensedLayout, item))) {
       resolveIntersection(
-        layout,
+        sortedLayout,
         item,
         intersectItem.posY + intersectItem.height
       );
     }
 
     condensedLayout.push(item);
+
+    returnLayout[layout.indexOf(item)] = item;
   }
 
-  return condensedLayout;
+  return returnLayout;
 };

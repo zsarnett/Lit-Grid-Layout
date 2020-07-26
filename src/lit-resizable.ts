@@ -8,6 +8,7 @@ import {
 } from "lit-element";
 
 import "./lit-draggable";
+import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-resizable")
 export class LitResizable extends LitElement {
@@ -34,8 +35,15 @@ export class LitResizable extends LitElement {
 
     const { deltaX, deltaY } = ev.detail as any;
 
-    this.style.width = this.startWidth! + deltaX + "px";
-    this.style.height = this.startHeight! + deltaY + "px";
+    const width = this.startWidth! + deltaX;
+    const height = this.startHeight! + deltaY;
+
+    fireEvent(this, "resize", {
+      width,
+      height,
+      deltaX,
+      deltaY,
+    });
   }
 
   static get styles(): CSSResult {

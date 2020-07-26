@@ -8,6 +8,10 @@ import {
   property,
 } from "lit-element";
 
+import "./lit-draggable";
+import "./lit-resizable";
+import { fireEvent } from "./util/fire-event";
+
 @customElement("lit-grid-item")
 export class LitGridItem extends LitElement {
   @property({ type: Number }) public width!: number;
@@ -25,6 +29,10 @@ export class LitGridItem extends LitElement {
   @property({ type: Number }) public parentWidth!: number;
 
   @property({ type: Array }) public margin!: [number, number];
+
+  @property({ type: Number }) public minWidth = 1;
+
+  @property({ type: Number }) public minHeight = 1;
 
   @property() public key!: string;
 
@@ -54,7 +62,38 @@ export class LitGridItem extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`<slot></slot>`;
+    return html`
+      <lit-resizable @resize=${this._resize}>
+        <slot></slot>
+      </lit-resizable>
+    `;
+  }
+
+  private _resize(ev: any): void {
+    const { width, height } = ev.detail as any;
+
+    let newWidth = Math.round(
+      (width + this.margin[0]) / (this._getColumnWidth() + this.margin[0])
+    );
+    let newHeight = Math.round(
+      (height + this.margin[1]) / (this.rowHeight + this.margin[1])
+    );
+
+    const deltaWidth = newWidth - this.width;
+    const deltaHeight = newHeight - this.height;
+
+    if (!deltaWidth && !deltaHeight) {
+      return;
+    }
+
+    // Dimensions can't be smaller than minimums
+    newWidth = Math.max(this.minWidth, newWidth);
+    newHeight = Math.max(this.minHeight, newHeight);
+
+    // Width can't be bigger then amount of columns minus its X position
+    newWidth = Math.min(this.columns - this.posX, newWidth);
+
+    fireEvent(this, "resize", { newWidth, newHeight });
   }
 
   private _getColumnWidth(): number {
@@ -71,6 +110,10 @@ export class LitGridItem extends LitElement {
         width: var(--item-width);
         height: var(--item-height);
         transform: translate(var(--item-left), var(--item-top));
+      }
+      lit-resizable {
+        width: 100%;
+        height: 100%;
       }
     `;
   }
