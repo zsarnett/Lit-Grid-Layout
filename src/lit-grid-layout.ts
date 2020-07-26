@@ -134,6 +134,10 @@ export class LitGridLayout extends LitElement {
         display: block;
         position: relative;
       }
+
+      lit-grid-item {
+        transition: all 200ms;
+      }
     `;
   }
 }
