@@ -3,47 +3,47 @@ import {
   html,
   LitElement,
   TemplateResult,
-  CSSResult,
-  css,
+  property,
 } from "lit-element";
 
 @customElement("lit-draggable")
 export class LitDraggable extends LitElement {
+  @property({ type: Array }) public grid?: [number, number];
+
   private startX?: number;
+
   private startY?: number;
-  private startTop?: number;
-  private startLeft?: number;
 
   private _dragging = false;
 
   protected firstUpdated(): void {
-    this.addEventListener("mousedown", this._mouseDown.bind(this));
-    this.addEventListener("mousemove", this._mouseMove.bind(this));
-    document.addEventListener("mouseup", this._mouseUp.bind(this));
+    this.addEventListener("mousedown", this._dragStart.bind(this));
+    document.addEventListener("mousemove", this._drag.bind(this));
+    document.addEventListener("mouseup", this._dragEnd.bind(this));
   }
 
   protected render(): TemplateResult {
     return html`<slot></slot>`;
   }
 
-  private _mouseDown(ev: MouseEvent | TouchEvent): void {
-    console.log("dragstart");
-    const rect = this.getBoundingClientRect();
-    const parentRect = this.parentElement!.getBoundingClientRect();
+  private _dragStart(ev: MouseEvent | TouchEvent): void {
     const pos = this._getPos(ev);
 
     this.startX = pos.x;
     this.startY = pos.y;
-    this.startLeft = rect.left - parentRect.left;
-    this.startTop = rect.top - parentRect.top;
-
-    console.log(this.startTop);
-    console.log(this.startLeft);
 
     this._dragging = true;
+
+    const dragStartEvent = new CustomEvent("dragStart", {
+      detail: {
+        startX: this.startX,
+        startY: this.startY,
+      },
+    });
+    this.dispatchEvent(dragStartEvent);
   }
 
-  private _mouseMove(ev: MouseEvent | TouchEvent): void {
+  private _drag(ev: MouseEvent | TouchEvent): void {
     if (!this._dragging) {
       return;
     }
@@ -51,12 +51,32 @@ export class LitDraggable extends LitElement {
 
     const pos = this._getPos(ev);
 
-    this.style.top = this.startTop! + pos.y - this.startY! + "px";
-    this.style.left = this.startLeft! + pos.x - this.startX! + "px";
+    let deltaX = pos.x - this.startX!;
+    let deltaY = pos.y - this.startY!;
+
+    if (this.grid) {
+      deltaX = Math.round(deltaX / this.grid[0]) * this.grid[0];
+      deltaY = Math.round(deltaY / this.grid[1]) * this.grid[1];
+    }
+
+    if (!deltaX && !deltaY) {
+      return;
+    }
+
+    const dragEvent = new CustomEvent("drag", {
+      detail: {
+        deltaX,
+        deltaY,
+      },
+    });
+    this.dispatchEvent(dragEvent);
   }
 
-  private _mouseUp(): void {
+  private _dragEnd(): void {
     this._dragging = false;
+
+    const dragEndEvent = new CustomEvent("dragEnd");
+    this.dispatchEvent(dragEndEvent);
   }
 
   private _getPos(ev: MouseEvent | TouchEvent): any {
@@ -71,15 +91,6 @@ export class LitDraggable extends LitElement {
       x: mouseX,
       y: mouseY,
     };
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        position: absolute;
-      }
-    `;
   }
 }
 
