@@ -40,30 +40,9 @@ export class LitGridLayout extends LitElement {
     );
   }
 
-  private setupLayout(): void {
-    let newLayout: Layout = [];
-
-    // Create new Layout
-    // Iterate over all children and find item in prev layout or create new item
-    for (const element of this.childrenElements) {
-      let layoutItem = this.layout.find((item) => item.key === element.key);
-
-      if (!layoutItem) {
-        const itemProps = element.grid || {
-          width: 1,
-          height: 1,
-          posX: 0,
-          posY: findLayoutBottom(newLayout),
-        };
-
-        layoutItem = { ...itemProps, key: element.key };
-      }
-
-      newLayout.push(layoutItem);
-    }
-
-    newLayout = fixLayoutBounds(newLayout, this.cols);
-    this._currentLayout = condenseLayout(newLayout);
+  get layoutHeight(): number {
+    const btm = findLayoutBottom(this.layout);
+    return btm * this.rowHeight + (btm - 1) * this.margin[1];
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -71,7 +50,7 @@ export class LitGridLayout extends LitElement {
 
     if (changedProps.has("layout")) {
       this.setupLayout();
-      this.style.height = `${findLayoutBottom(this.layout) * this.rowHeight}px`;
+      this.style.height = `${this.layoutHeight}px`;
     }
   }
 
@@ -100,6 +79,32 @@ export class LitGridLayout extends LitElement {
         `;
       })}
     `;
+  }
+
+  private setupLayout(): void {
+    let newLayout: Layout = [];
+
+    // Create new Layout
+    // Iterate over all children and find item in prev layout or create new item
+    for (const element of this.childrenElements) {
+      let layoutItem = this.layout.find((item) => item.key === element.key);
+
+      if (!layoutItem) {
+        const itemProps = element.grid || {
+          width: 1,
+          height: 1,
+          posX: 0,
+          posY: findLayoutBottom(newLayout),
+        };
+
+        layoutItem = { ...itemProps, key: element.key };
+      }
+
+      newLayout.push(layoutItem);
+    }
+
+    newLayout = fixLayoutBounds(newLayout, this.cols);
+    this._currentLayout = condenseLayout(newLayout);
   }
 
   static get styles(): CSSResult {
