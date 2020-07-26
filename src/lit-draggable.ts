@@ -5,6 +5,7 @@ import {
   TemplateResult,
   property,
 } from "lit-element";
+import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-draggable")
 export class LitDraggable extends LitElement {
@@ -34,13 +35,10 @@ export class LitDraggable extends LitElement {
 
     this._dragging = true;
 
-    const dragStartEvent = new CustomEvent("dragStart", {
-      detail: {
-        startX: this.startX,
-        startY: this.startY,
-      },
+    fireEvent(this, "dragStart", {
+      startX: this.startX,
+      startY: this.startY,
     });
-    this.dispatchEvent(dragStartEvent);
   }
 
   private _drag(ev: MouseEvent | TouchEvent): void {
@@ -63,20 +61,16 @@ export class LitDraggable extends LitElement {
       return;
     }
 
-    const dragEvent = new CustomEvent("drag", {
-      detail: {
-        deltaX,
-        deltaY,
-      },
+    fireEvent(this, "drag", {
+      deltaX,
+      deltaY,
     });
-    this.dispatchEvent(dragEvent);
   }
 
   private _dragEnd(): void {
     this._dragging = false;
 
-    const dragEndEvent = new CustomEvent("dragEnd");
-    this.dispatchEvent(dragEndEvent);
+    fireEvent(this, "dragEnd");
   }
 
   private _getPos(ev: MouseEvent | TouchEvent): any {
