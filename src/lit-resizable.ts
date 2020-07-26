@@ -7,65 +7,35 @@ import {
   css,
 } from "lit-element";
 
+import "./lit-draggable";
+
 @customElement("lit-resizable")
 export class LitResizable extends LitElement {
-  private startX?: number;
-  private startY?: number;
   private startWidth?: number;
-  private startHeight?: number;
-  private _dragging = false;
 
-  protected firstUpdated(): void {
-    document.addEventListener("mousemove", this._mouseMove.bind(this));
-    document.addEventListener("mouseup", this._mouseUp.bind(this));
-  }
+  private startHeight?: number;
 
   protected render(): TemplateResult {
     return html`
       <slot></slot>
-      <div class="resizer" @mousedown=${this._mouseDown}></div>
+
+      <lit-draggable @drag=${this._resize} @dragStart=${this._resizeStart}>
+      </lit-draggable>
     `;
   }
 
-  private _mouseDown(ev: MouseEvent): void {
-    console.log("dragstart");
-
-    this.startX = ev.clientX;
-    this.startY = ev.clientY;
+  private _resizeStart(): void {
     this.startWidth = this.clientWidth;
     this.startHeight = this.clientHeight;
-    this._dragging = true;
   }
 
-  private _mouseMove(ev: MouseEvent | TouchEvent): void {
-    if (!this._dragging) {
-      return;
-    }
-
+  private _resize(ev: MouseEvent | TouchEvent): void {
     ev.stopPropagation();
 
-    const pos = this._getPos(ev);
+    const { deltaX, deltaY } = ev.detail as any;
 
-    this.style.width = this.startWidth! + pos.x - this.startX! + "px";
-    this.style.height = this.startHeight! + pos.y - this.startY! + "px";
-  }
-
-  private _mouseUp(): void {
-    this._dragging = false;
-  }
-
-  private _getPos(ev: MouseEvent | TouchEvent): any {
-    const mouseX = ev.type.startsWith("touch")
-      ? (ev as TouchEvent).touches[0].clientX
-      : (ev as MouseEvent).clientX;
-    const mouseY = ev.type.startsWith("touch")
-      ? (ev as TouchEvent).touches[0].clientY
-      : (ev as MouseEvent).clientY;
-
-    return {
-      x: mouseX,
-      y: mouseY,
-    };
+    this.style.width = this.startWidth! + deltaX + "px";
+    this.style.height = this.startHeight! + deltaY + "px";
   }
 
   static get styles(): CSSResult {
@@ -75,7 +45,7 @@ export class LitResizable extends LitElement {
         display: block;
       }
 
-      .resizer {
+      lit-draggable {
         width: 10px;
         height: 10px;
         background: blue;

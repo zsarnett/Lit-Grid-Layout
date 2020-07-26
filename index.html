@@ -7,7 +7,9 @@
     <script src="dist/lit-grid-layout.bundled.js" type="module"></script>
   </head>
   <body>
-    <!-- <lit-resizable style="width: 50px; height: 50px;">
+    <lit-resizable
+      style="width: 50px; height: 50px; position: relative; display: block;"
+    >
       <div
         style="
           position: absolute;
@@ -29,11 +31,11 @@
         position: relative;
       "
     >
-      <lit-draggable>
+      <lit-draggable-wrapper>
         <div style="width: 50px; height: 50px; background-color: aqua;"></div>
-      </lit-draggable>
+      </lit-draggable-wrapper>
     </div>
-
+    <!--
     <div
       style="
         width: 500px;
