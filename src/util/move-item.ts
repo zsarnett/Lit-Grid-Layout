@@ -32,13 +32,8 @@ export function moveItem(
 
   if (movingUp) {
     sorted = sorted.reverse();
-    console.log("moving up");
   }
   const allIntersects = getAllIntersects(sorted, item);
-
-  console.log(allIntersects);
-
-  console.log("Moving Item: ", item.key);
 
   const itemIndex = layout.findIndex((i) => i.key === item.key);
   layout[itemIndex] = item;
