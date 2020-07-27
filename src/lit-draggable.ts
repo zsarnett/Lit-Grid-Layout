@@ -21,8 +21,12 @@ export class LitDraggable extends LitElement {
 
   protected firstUpdated(): void {
     this.addEventListener("mousedown", this._dragStart.bind(this));
+    this.addEventListener("touchstart", this._dragStart.bind(this));
     document.addEventListener("mousemove", this._drag.bind(this));
+    document.addEventListener("touchmove", this._drag.bind(this));
     document.addEventListener("mouseup", this._dragEnd.bind(this));
+    document.addEventListener("touchcancel", this._dragEnd.bind(this));
+    document.addEventListener("touchend", this._dragEnd.bind(this));
   }
 
   protected render(): TemplateResult {
