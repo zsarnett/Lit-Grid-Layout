@@ -20,7 +20,7 @@ export class LitDraggableWrapper extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <lit-draggable @drag=${this._drag} @dragStart=${this._dragStart}>
+      <lit-draggable @dragging=${this._drag} @dragStart=${this._dragStart}>
         <slot></slot>
       </lit-draggable>
     `;

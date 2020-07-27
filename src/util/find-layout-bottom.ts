@@ -1,5 +1,3 @@
-// Find the y bottom of the LayoutItem array
-
 import type { LayoutItem } from "../types";
 
 // Return the bottom y value

@@ -1,4 +1,4 @@
-import { Layout } from "../types";
+import type { Layout } from "../types";
 
 export function sortLayout(layout: Layout): Layout {
   return layout.slice(0).sort(function (a, b) {

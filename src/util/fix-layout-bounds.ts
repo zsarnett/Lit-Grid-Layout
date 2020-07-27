@@ -1,8 +1,6 @@
-// Make sure all layout items are within the bounds of the cols provided
-
 import type { LayoutItem } from "../types";
 
-// Return LayoutItem Array
+// Make sure all layout items are within the bounds of the cols provided
 export const fixLayoutBounds = (
   layout: LayoutItem[],
   cols: number

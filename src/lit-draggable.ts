@@ -11,6 +11,8 @@ import { fireEvent } from "./util/fire-event";
 export class LitDraggable extends LitElement {
   @property({ type: Array }) public grid?: [number, number];
 
+  @property({ type: Boolean, reflect: true }) public isDraggable = true;
+
   private startX?: number;
 
   private startY?: number;
@@ -28,6 +30,13 @@ export class LitDraggable extends LitElement {
   }
 
   private _dragStart(ev: MouseEvent | TouchEvent): void {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (!this.isDraggable) {
+      return;
+    }
+
     const pos = this._getPos(ev);
 
     this.startX = pos.x;
@@ -42,10 +51,12 @@ export class LitDraggable extends LitElement {
   }
 
   private _drag(ev: MouseEvent | TouchEvent): void {
-    if (!this._dragging) {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (!this._dragging || !this.isDraggable) {
       return;
     }
-    ev.stopPropagation();
 
     const pos = this._getPos(ev);
 
@@ -61,13 +72,20 @@ export class LitDraggable extends LitElement {
       return;
     }
 
-    fireEvent(this, "drag", {
+    fireEvent(this, "dragging", {
       deltaX,
       deltaY,
     });
   }
 
-  private _dragEnd(): void {
+  private _dragEnd(ev: MouseEvent | TouchEvent): void {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (!this._dragging || !this.isDraggable) {
+      return;
+    }
+
     this._dragging = false;
 
     fireEvent(this, "dragEnd");
