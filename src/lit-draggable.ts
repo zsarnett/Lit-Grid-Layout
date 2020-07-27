@@ -36,15 +36,12 @@ export class LitDraggable extends LitElement {
   private _dragStart(ev: MouseEvent | TouchEvent): void {
     ev.stopPropagation();
     ev.preventDefault();
-    console.log("test");
 
     if (!this.isDraggable) {
       return;
     }
 
     const pos = this._getPos(ev);
-
-    console.log(pos);
 
     this.startX = pos.x;
     this.startY = pos.y;
@@ -78,8 +75,6 @@ export class LitDraggable extends LitElement {
     if (!deltaX && !deltaY) {
       return;
     }
-
-    console.log(deltaX);
 
     fireEvent(this, "dragging", {
       deltaX,
