@@ -5,6 +5,7 @@ import {
   TemplateResult,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 
 import "./lit-draggable";
@@ -12,6 +13,8 @@ import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-resizable")
 export class LitResizable extends LitElement {
+  @property({ attribute: false }) public handle?: HTMLElement;
+
   private startWidth?: number;
 
   private startHeight?: number;
@@ -25,6 +28,7 @@ export class LitResizable extends LitElement {
         @dragStart=${this._resizeStart}
         @dragEnd=${this._resizeEnd}
       >
+        ${!this.handle ? "" : html`${this.handle}`}
       </lit-draggable>
     `;
   }
@@ -63,13 +67,13 @@ export class LitResizable extends LitElement {
         display: block;
       }
 
-      lit-draggable {
+      .default-handle {
+        background-color: red;
+        position: absolute;
         width: 10px;
         height: 10px;
-        background: blue;
-        position: absolute;
-        right: 0;
-        bottom: 0;
+        bottom: 0px;
+        right: 0px;
         cursor: se-resize;
       }
     `;

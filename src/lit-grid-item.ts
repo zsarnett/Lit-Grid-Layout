@@ -38,6 +38,8 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Boolean }) public isResizable = true;
 
+  @property({ attribute: false }) public resizeHandle!: HTMLElement;
+
   @property() public key!: string;
 
   @property({ attribute: "dragging", reflect: true, type: Boolean })
@@ -94,6 +96,7 @@ export class LitGridItem extends LitElement {
     if (this.isResizable) {
       gridItemHTML = html`
         <lit-resizable
+          .handle=${this.resizeHandle}
           @resizeStart=${this._resizeStart}
           @resize=${this._resize}
           @resizeEnd=${this._resizeEnd}
@@ -134,14 +137,16 @@ export class LitGridItem extends LitElement {
       this.margin[0];
     const minHeightPX = this.rowHeight * this.minHeight;
 
-    width =
-      width < minWidthPX ? minWidthPX : width > maxWidthPX ? maxWidthPX : width;
+    // update width and height to be within contraints
+    width = Math.max(minWidthPX, width);
+    width = Math.min(maxWidthPX, width);
+    height = Math.max(minHeightPX, height);
 
-    height = height < this.rowHeight ? minHeightPX : height;
-
+    // Go ahead an update the width and height of the element (this won't affect the layout)
     this.style.setProperty("--item-width", `${width}px`);
     this.style.setProperty("--item-height", `${height}px`);
 
+    // Calculate the new width and height in grid units
     const newWidth = Math.round(
       (width + this.margin[0]) / (this._getColumnWidth() + this.margin[0])
     );
@@ -149,10 +154,8 @@ export class LitGridItem extends LitElement {
       (height + this.margin[1]) / (this.rowHeight + this.margin[1])
     );
 
-    const deltaWidth = newWidth - this.width;
-    const deltaHeight = newHeight - this.height;
-
-    if (!deltaWidth && !deltaHeight) {
+    // if the grid units don't change, don't send the update to the layout
+    if (newWidth === this.width && newHeight === this.height) {
       return;
     }
 
@@ -166,6 +169,8 @@ export class LitGridItem extends LitElement {
   }
 
   private _dragStart(): void {
+    // Get the starting numbers and use these in calcs
+    // This is so we don't keep adding the delta as the props are updated from the layout
     const rect = this.getBoundingClientRect();
     const parentRect = this.offsetParent!.getBoundingClientRect();
     this._startLeft = rect.left - parentRect.left;
@@ -186,30 +191,24 @@ export class LitGridItem extends LitElement {
 
     const { deltaX, deltaY } = ev.detail as any;
 
+    // Go ahead an update the position of the item, this won't affect the layout
     this.style.setProperty("--item-left", `${this._startLeft + deltaX}px`);
     this.style.setProperty("--item-top", `${this._startTop + deltaY}px`);
 
+    // Get the change in grid units from the change in pixels
     const deltaCols = Math.round(
       deltaX / (this._getColumnWidth() + this.margin[0])
     );
-
     const deltaRows = Math.round(deltaY / (this.rowHeight + this.margin[1]));
 
+    // If change in grid units from both axis are 0, no need to go forward
     if (!deltaRows && !deltaCols) {
       return;
     }
 
+    // Add the delta to the orginal, to get the new position
     let newPosX = this._startPosX + deltaCols;
     let newPosY = this._startPosY + deltaRows;
-
-    if (
-      newPosX === undefined ||
-      isNaN(newPosX) ||
-      newPosY === undefined ||
-      isNaN(newPosY)
-    ) {
-      return;
-    }
 
     // Positions have to stay within bounds
     newPosX = Math.max(0, newPosX);
@@ -249,16 +248,28 @@ export class LitGridItem extends LitElement {
       :host([dragging]) {
         transition: none;
         z-index: 3;
+        opacity: var(--grid-item-dragging-opacity, 0.8);
       }
 
       :host([resizing]) {
         transition-property: transform;
         z-index: 3;
+        opacity: var(--grid-item-resizing-opacity, 0.8);
       }
 
       lit-resizable {
         width: 100%;
         height: 100%;
+      }
+
+      .handle {
+        width: 10px;
+        height: 10px;
+        background: red;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        cursor: se-resize;
       }
     `;
   }
