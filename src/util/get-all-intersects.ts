@@ -1,4 +1,4 @@
-import { Layout, LayoutItem } from "../types";
+import type { Layout, LayoutItem } from "../types";
 import { intersects } from "./intersects";
 
 export function getAllIntersects(

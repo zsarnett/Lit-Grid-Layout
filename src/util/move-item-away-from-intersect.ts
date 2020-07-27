@@ -1,4 +1,4 @@
-import { Layout, LayoutItem } from "../types";
+import type { Layout, LayoutItem } from "../types";
 import { moveItem } from "./move-item";
 import { getItemItersect } from "./get-item-intersect";
 

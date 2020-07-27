@@ -14,9 +14,9 @@ import type { LayoutItemElement, Layout } from "./types";
 import { findLayoutBottom } from "./util/find-layout-bottom";
 import { fixLayoutBounds } from "./util/fix-layout-bounds";
 import { condenseLayout } from "./util/condense-layout";
+import { moveItem } from "./util/move-item";
 
 import "./lit-grid-item";
-import { moveItem } from "./util/move-item";
 
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
