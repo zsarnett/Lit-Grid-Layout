@@ -92,13 +92,15 @@ export class LitGridItem extends LitElement {
     let gridItemHTML = html`<slot></slot>`;
 
     if (this.isResizable) {
-      gridItemHTML = html` <lit-resizable
-        @resizeStart=${this._resizeStart}
-        @resize=${this._resize}
-        @resizeEnd=${this._resizeEnd}
-      >
-        ${gridItemHTML}
-      </lit-resizable>`;
+      gridItemHTML = html`
+        <lit-resizable
+          @resizeStart=${this._resizeStart}
+          @resize=${this._resize}
+          @resizeEnd=${this._resizeEnd}
+        >
+          ${gridItemHTML}
+        </lit-resizable>
+      `;
     }
 
     if (this.isDraggable) {

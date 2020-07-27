@@ -216,13 +216,15 @@ found at http://polymer.github.io/PATENTS.txt
         bottom: 0;
         cursor: se-resize;
       }
-    `}};gt=t([I("lit-resizable")],gt);let mt=class extends st{constructor(){super(...arguments),this.minWidth=1,this.minHeight=1,this.isDraggable=!0,this.isResizable=!0,this._isDragging=!1,this._isResizing=!1}updated(){this._isDragging||(this.style.setProperty("--item-left",Math.round(this.posX*(this._getColumnWidth()+this.margin[0]))+"px"),this.style.setProperty("--item-top",Math.round(this.posY*(this.rowHeight+this.margin[1]))+"px"),this._isResizing||(this.style.setProperty("--item-width",this.width*this._getColumnWidth()+Math.max(0,this.width-1)*this.margin[0]+"px"),this.style.setProperty("--item-height",this.height*this.rowHeight+Math.max(0,this.height-1)*this.margin[1]+"px")))}render(){let t=M`<slot></slot>`;return this.isResizable&&(t=M` <lit-resizable
-        @resizeStart=${this._resizeStart}
-        @resize=${this._resize}
-        @resizeEnd=${this._resizeEnd}
-      >
-        ${t}
-      </lit-resizable>`),this.isDraggable&&(t=M`
+    `}};gt=t([I("lit-resizable")],gt);let mt=class extends st{constructor(){super(...arguments),this.minWidth=1,this.minHeight=1,this.isDraggable=!0,this.isResizable=!0,this._isDragging=!1,this._isResizing=!1}updated(){this._isDragging||(this.style.setProperty("--item-left",Math.round(this.posX*(this._getColumnWidth()+this.margin[0]))+"px"),this.style.setProperty("--item-top",Math.round(this.posY*(this.rowHeight+this.margin[1]))+"px"),this._isResizing||(this.style.setProperty("--item-width",this.width*this._getColumnWidth()+Math.max(0,this.width-1)*this.margin[0]+"px"),this.style.setProperty("--item-height",this.height*this.rowHeight+Math.max(0,this.height-1)*this.margin[1]+"px")))}render(){let t=M`<slot></slot>`;return this.isResizable&&(t=M`
+        <lit-resizable
+          @resizeStart=${this._resizeStart}
+          @resize=${this._resize}
+          @resizeEnd=${this._resizeEnd}
+        >
+          ${t}
+        </lit-resizable>
+      `),this.isDraggable&&(t=M`
         <lit-draggable
           .isDraggable=${this.isDraggable}
           @dragStart=${this._dragStart}
