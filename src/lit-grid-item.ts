@@ -55,7 +55,20 @@ export class LitGridItem extends LitElement {
   private _startPosY?: number;
 
   protected updated(): void {
-    if (this._isDragging || this._isResizing) {
+    if (this._isDragging) {
+      return;
+    }
+
+    this.style.setProperty(
+      "--item-left",
+      `${Math.round(this.posX * (this._getColumnWidth() + this.margin[0]))}px`
+    );
+    this.style.setProperty(
+      "--item-top",
+      `${Math.round(this.posY * (this.rowHeight + this.margin[1]))}px`
+    );
+
+    if (this._isResizing) {
       return;
     }
 
@@ -72,14 +85,6 @@ export class LitGridItem extends LitElement {
         this.height * this.rowHeight +
         Math.max(0, this.height - 1) * this.margin[1]
       }px`
-    );
-    this.style.setProperty(
-      "--item-left",
-      `${Math.round(this.posX * (this._getColumnWidth() + this.margin[0]))}px`
-    );
-    this.style.setProperty(
-      "--item-top",
-      `${Math.round(this.posY * (this.rowHeight + this.margin[1]))}px`
     );
   }
 
@@ -238,10 +243,14 @@ export class LitGridItem extends LitElement {
         z-index: 2;
       }
 
-      :host([dragging]),
-      :host([resizing]) {
+      :host([dragging]) {
         transition: none;
         z-index: 3;
+      }
+
+      :host([resizing]) {
+        z-index: 3;
+        transition-property: transform;
       }
 
       lit-resizable {
