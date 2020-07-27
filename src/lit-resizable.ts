@@ -20,7 +20,11 @@ export class LitResizable extends LitElement {
     return html`
       <slot></slot>
 
-      <lit-draggable @drag=${this._resize} @dragStart=${this._resizeStart}>
+      <lit-draggable
+        @dragging=${this._resize}
+        @dragStart=${this._resizeStart}
+        @dragEnd=${this._resizeEnd}
+      >
       </lit-draggable>
     `;
   }
@@ -28,6 +32,8 @@ export class LitResizable extends LitElement {
   private _resizeStart(): void {
     this.startWidth = this.clientWidth;
     this.startHeight = this.clientHeight;
+
+    fireEvent(this, "resizeStart");
   }
 
   private _resize(ev: MouseEvent | TouchEvent): void {
@@ -44,6 +50,10 @@ export class LitResizable extends LitElement {
       deltaX,
       deltaY,
     });
+  }
+
+  private _resizeEnd(): void {
+    fireEvent(this, "resizeEnd");
   }
 
   static get styles(): CSSResult {

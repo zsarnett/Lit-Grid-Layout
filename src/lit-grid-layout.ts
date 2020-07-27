@@ -16,6 +16,7 @@ import { fixLayoutBounds } from "./util/fix-layout-bounds";
 import { condenseLayout } from "./util/condense-layout";
 
 import "./lit-grid-item";
+import { moveItem } from "./util/move-item";
 
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
@@ -25,7 +26,7 @@ export class LitGridLayout extends LitElement {
 
   public rowHeight = 30;
 
-  public cols = 12;
+  public columns = 12;
 
   public margin: [number, number] = [10, 10];
 
@@ -70,10 +71,11 @@ export class LitGridLayout extends LitElement {
             .posX=${item.posX}
             .key=${item.key}
             .parentWidth=${this.clientWidth}
-            .columns=${this.cols}
+            .columns=${this.columns}
             .rowHeight=${this.rowHeight}
             .margin=${this.margin}
             @resize=${this._itemResize}
+            @dragging=${this._itemDrag}
           >
             ${element}
           </lit-grid-item>
@@ -104,7 +106,7 @@ export class LitGridLayout extends LitElement {
       newLayout.push(layoutItem);
     }
 
-    newLayout = fixLayoutBounds(newLayout, this.cols);
+    newLayout = fixLayoutBounds(newLayout, this.columns);
     this._currentLayout = condenseLayout(newLayout);
   }
 
@@ -125,7 +127,30 @@ export class LitGridLayout extends LitElement {
       height: newHeight,
     };
 
-    this.layout = this._currentLayout;
+    this._currentLayout = condenseLayout(this._currentLayout);
+  }
+
+  private _itemDrag(ev: any): void {
+    ev.stopPropagation();
+    const { newPosX, newPosY } = ev.detail;
+
+    const itemKey = ev.currentTarget.key;
+    const itemIndex = this._currentLayout.findIndex(
+      (item) => item.key === itemKey
+    );
+
+    const itemLayout = this._currentLayout[itemIndex];
+
+    const newLayout = moveItem(
+      [...this._currentLayout],
+      itemLayout,
+      newPosX,
+      newPosY,
+      this.columns,
+      true
+    );
+
+    this._currentLayout = condenseLayout(newLayout);
   }
 
   static get styles(): CSSResult {
@@ -133,10 +158,6 @@ export class LitGridLayout extends LitElement {
       :host {
         display: block;
         position: relative;
-      }
-
-      lit-grid-item {
-        transition: all 200ms;
       }
     `;
   }

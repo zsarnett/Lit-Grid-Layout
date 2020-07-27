@@ -4,6 +4,7 @@ export interface LayoutItem {
   posX: number;
   posY: number;
   key: string;
+  hasMoved?: boolean;
 }
 
 export type Layout = Array<LayoutItem>;
