@@ -66,8 +66,9 @@ export class LitGridLayout extends LitElement {
 
     if (changedProps.has("layout")) {
       this.setupLayout();
-      this.style.height = `${this.layoutHeight}px`;
     }
+
+    this.style.height = `${this.layoutHeight}px`;
   }
 
   protected render(): TemplateResult {
