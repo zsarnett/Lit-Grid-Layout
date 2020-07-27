@@ -97,7 +97,7 @@
       <div class="lit-grid-item" id="11" style="background-color: tan;"></div>
     </lit-grid-layout> -->
 
-    <div class="layout" style="padding: 20px;"></div>
+    <div class="layout" style="padding: 20px; background-color: #eee;"></div>
 
     <script>
       function getRandomColor() {
@@ -127,10 +127,16 @@
         const itemEl = document.createElement("div");
 
         itemEl.classList.add("lit-grid-item");
-        itemEl.style.backgroundColor = getRandomColor();
+        itemEl.style.backgroundColor = "#ccc";
+        itemEl.style.border = "1px solid black";
         itemEl.style.height = "100%";
         itemEl.style.width = "100%";
+        itemEl.style.margin = "auto";
+        itemEl.style.textAlign = "center";
+        itemEl.style.fontSize = "24px";
+        itemEl.style.lineHeight = "var(--item-height)";
         itemEl.key = i.toString();
+        itemEl.innerHTML = i;
 
         itemElementArray.push(itemEl);
       }

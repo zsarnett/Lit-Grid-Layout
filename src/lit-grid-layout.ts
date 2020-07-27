@@ -30,6 +30,8 @@ export class LitGridLayout extends LitElement {
 
   @property({ type: Array }) public margin: [number, number] = [10, 10];
 
+  @property({ attribute: false }) public resizeHandle?: HTMLElement;
+
   @internalProperty() private _currentLayout: Layout = [];
 
   @internalProperty() private _placeholder?: LayoutItem;
@@ -53,20 +55,32 @@ export class LitGridLayout extends LitElement {
     // TODO: Only run SetupLayout if they value of the public layout changes or if the amount of elements changes.
     // TODO: Update the public layout anytime the _currentLayout changes but block the setupLayout if Layout === currentLayout
 
+    if (
+      (changedProps.has("resizeHandle") && !this.resizeHandle) ||
+      !this.resizeHandle
+    ) {
+      const handle = document.createElement("div");
+      handle.classList.add("default-handle");
+      this.resizeHandle = handle;
+    }
+
     if (changedProps.has("layout")) {
       this.setupLayout();
-      this.style.height = `${this.layoutHeight}px`;
     }
+
+    this.style.height = `${this.layoutHeight}px`;
   }
 
   protected render(): TemplateResult {
-    if (!this._currentLayout?.length) {
+    if (!this._currentLayout?.length || !this.resizeHandle) {
       return html``;
     }
 
     return html`
       ${this.childrenElements.map((element, idx) => {
         const item = this._currentLayout[idx];
+        const handle = this.resizeHandle!.cloneNode(true) as HTMLElement;
+
         return html`
           <lit-grid-item
             .width=${item.width}
@@ -78,6 +92,7 @@ export class LitGridLayout extends LitElement {
             .columns=${this.columns}
             .rowHeight=${this.rowHeight}
             .margin=${this.margin}
+            .resizeHandle=${handle}
             @resizeStart=${this._itemResizeStart}
             @resize=${this._itemResize}
             @resizeEnd=${this._itemResizeEnd}
