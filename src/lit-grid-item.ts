@@ -6,7 +6,6 @@ import {
   CSSResult,
   css,
   property,
-  internalProperty,
 } from "lit-element";
 
 import "./lit-draggable";
@@ -35,12 +34,17 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Number }) public minHeight = 1;
 
-  @property() public key!: string;
+  @property({ type: Boolean }) public isDraggable = true;
 
-  @internalProperty() private _isDraggable = true;
+  @property({ type: Boolean }) public isResizable = true;
+
+  @property() public key!: string;
 
   @property({ attribute: "dragging", reflect: true, type: Boolean })
   private _isDragging = false;
+
+  @property({ attribute: "resizing", reflect: true, type: Boolean })
+  private _isResizing = false;
 
   private _startTop?: number;
 
@@ -51,7 +55,7 @@ export class LitGridItem extends LitElement {
   private _startPosY?: number;
 
   protected updated(): void {
-    if (this._isDragging) {
+    if (this._isDragging || this._isResizing) {
       return;
     }
 
@@ -80,35 +84,60 @@ export class LitGridItem extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`
-      <lit-draggable
-        .isDraggable=${this._isDraggable}
-        @dragStart=${this._dragStart}
-        @dragging=${this._drag}
-        @dragEnd=${this._dragEnd}
+    let gridItemHTML = html`<slot></slot>`;
+
+    if (this.isResizable) {
+      gridItemHTML = html` <lit-resizable
+        @resizeStart=${this._resizeStart}
+        @resize=${this._resize}
+        @resizeEnd=${this._resizeEnd}
       >
-        <lit-resizable
-          @resizeStart=${this._resizeStart}
-          @resize=${this._resize}
-          @resizeEnd=${this._resizeEnd}
+        ${gridItemHTML}
+      </lit-resizable>`;
+    }
+
+    if (this.isDraggable) {
+      gridItemHTML = html`
+        <lit-draggable
+          .isDraggable=${this.isDraggable}
+          @dragStart=${this._dragStart}
+          @dragging=${this._drag}
+          @dragEnd=${this._dragEnd}
         >
-          <slot></slot>
-        </lit-resizable>
-      </lit-draggable>
-    `;
+          ${gridItemHTML}
+        </lit-draggable>
+      `;
+    }
+    return gridItemHTML;
   }
 
   private _resizeStart(): void {
-    this._isDraggable = false;
+    this.isDraggable = false;
+    this._isResizing = true;
+    fireEvent(this, "resizeStart");
   }
 
   private _resize(ev: any): void {
-    const { width, height } = ev.detail as any;
+    let { width, height } = ev.detail as any;
 
-    let newWidth = Math.round(
+    const minWidthPX = this._getColumnWidth() * this.minWidth;
+    const maxWidthPX =
+      (this._getColumnWidth() + this.margin[0]) * (this.columns - this.posX) -
+      this.margin[0];
+    const minHeightPX = this.rowHeight * this.minHeight;
+
+    width =
+      width < minWidthPX ? minWidthPX : width > maxWidthPX ? maxWidthPX : width;
+
+    height = height < this.rowHeight ? minHeightPX : height;
+
+    this.style.setProperty("--item-width", `${width}px`);
+    this.style.setProperty("--item-height", `${height}px`);
+
+    const newWidth = Math.round(
       (width + this.margin[0]) / (this._getColumnWidth() + this.margin[0])
     );
-    let newHeight = Math.round(
+    const newHeight = Math.round(
       (height + this.margin[1]) / (this.rowHeight + this.margin[1])
     );
 
@@ -119,18 +148,13 @@ export class LitGridItem extends LitElement {
       return;
     }
 
-    // Dimensions can't be smaller than minimums
-    newWidth = Math.max(this.minWidth, newWidth);
-    newHeight = Math.max(this.minHeight, newHeight);
-
-    // Width can't be bigger then amount of columns minus its X position
-    newWidth = Math.min(this.columns - this.posX, newWidth);
-
     fireEvent(this, "resize", { newWidth, newHeight });
   }
 
   private _resizeEnd(): void {
-    this._isDraggable = true;
+    this.isDraggable = true;
+    this._isResizing = false;
+    fireEvent(this, "resizeEnd");
   }
 
   private _dragStart(): void {
@@ -160,6 +184,7 @@ export class LitGridItem extends LitElement {
     const deltaCols = Math.round(
       deltaX / (this._getColumnWidth() + this.margin[0])
     );
+
     const deltaRows = Math.round(deltaY / (this.rowHeight + this.margin[1]));
 
     if (!deltaRows && !deltaCols) {
@@ -169,21 +194,24 @@ export class LitGridItem extends LitElement {
     let newPosX = this._startPosX + deltaCols;
     let newPosY = this._startPosY + deltaRows;
 
-    if (!newPosX || isNaN(newPosX) || !newPosY || isNaN(newPosY)) {
+    if (
+      newPosX === undefined ||
+      isNaN(newPosX) ||
+      newPosY === undefined ||
+      isNaN(newPosY)
+    ) {
       return;
     }
 
-    // Dimensions can't be smaller than minimums
+    // Positions have to stay within bounds
     newPosX = Math.max(0, newPosX);
     newPosY = Math.max(0, newPosY);
-
     newPosX = Math.min(this.columns - this.width, newPosX);
 
     fireEvent(this, "dragging", { newPosX, newPosY });
   }
 
   private _dragEnd(): void {
-    // Reset all vars
     this._isDragging = false;
     this._startLeft = undefined;
     this._startTop = undefined;
@@ -206,11 +234,14 @@ export class LitGridItem extends LitElement {
         width: var(--item-width);
         height: var(--item-height);
         transform: translate(var(--item-left), var(--item-top));
-        transition: all 200ms;
+        transition: var(--grid-item-transition, all 200ms);
+        z-index: 2;
       }
 
-      :host([dragging]) {
+      :host([dragging]),
+      :host([resizing]) {
         transition: none;
+        z-index: 3;
       }
 
       lit-resizable {

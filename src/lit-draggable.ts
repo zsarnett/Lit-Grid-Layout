@@ -30,6 +30,9 @@ export class LitDraggable extends LitElement {
   }
 
   private _dragStart(ev: MouseEvent | TouchEvent): void {
+    ev.stopPropagation();
+    ev.preventDefault();
+
     if (!this.isDraggable) {
       return;
     }
@@ -48,10 +51,12 @@ export class LitDraggable extends LitElement {
   }
 
   private _drag(ev: MouseEvent | TouchEvent): void {
+    ev.stopPropagation();
+    ev.preventDefault();
+
     if (!this._dragging || !this.isDraggable) {
       return;
     }
-    ev.stopPropagation();
 
     const pos = this._getPos(ev);
 
@@ -73,7 +78,14 @@ export class LitDraggable extends LitElement {
     });
   }
 
-  private _dragEnd(): void {
+  private _dragEnd(ev: MouseEvent | TouchEvent): void {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (!this._dragging || !this.isDraggable) {
+      return;
+    }
+
     this._dragging = false;
 
     fireEvent(this, "dragEnd");

@@ -10,7 +10,7 @@ import {
   PropertyValues,
 } from "lit-element";
 
-import type { LayoutItemElement, Layout } from "./types";
+import type { LayoutItemElement, Layout, LayoutItem } from "./types";
 import { findLayoutBottom } from "./util/find-layout-bottom";
 import { fixLayoutBounds } from "./util/fix-layout-bounds";
 import { condenseLayout } from "./util/condense-layout";
@@ -22,19 +22,21 @@ import "./lit-grid-item";
 export class LitGridLayout extends LitElement {
   @property({ type: Array }) public layout: Layout = [];
 
-  @property({ type: Array }) public items: LayoutItemElement[] = [];
+  @property({ type: Array }) public elements: LayoutItemElement[] = [];
 
-  public rowHeight = 30;
+  @property({ type: Number }) public rowHeight = 30;
 
-  public columns = 12;
+  @property({ type: Number }) public columns = 12;
 
-  public margin: [number, number] = [10, 10];
+  @property({ type: Array }) public margin: [number, number] = [10, 10];
 
   @internalProperty() private _currentLayout: Layout = [];
 
+  @internalProperty() private _placeholder?: LayoutItem;
+
   // Get items supplied by property and from any children
   get childrenElements(): LayoutItemElement[] {
-    return this.items.concat(
+    return this.elements.concat(
       ...Array.prototype.filter.call(this.children, (e: LayoutItemElement) =>
         e.classList.contains("lit-grid-item")
       )
@@ -48,6 +50,8 @@ export class LitGridLayout extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    // TODO: Only run SetupLayout if they value of the public layout changes or if the amount of elements changes.
+    // TODO: Update the public layout anytime the _currentLayout changes but block the setupLayout if Layout === currentLayout
 
     if (changedProps.has("layout")) {
       this.setupLayout();
@@ -74,13 +78,18 @@ export class LitGridLayout extends LitElement {
             .columns=${this.columns}
             .rowHeight=${this.rowHeight}
             .margin=${this.margin}
+            @resizeStart=${this._itemResizeStart}
             @resize=${this._itemResize}
+            @resizeEnd=${this._itemResizeEnd}
+            @dragStart=${this._itemDragStart}
             @dragging=${this._itemDrag}
+            @dragEnd=${this._itemDragEnd}
           >
             ${element}
           </lit-grid-item>
         `;
       })}
+      ${this._renderPlaceHolder()}
     `;
   }
 
@@ -110,6 +119,12 @@ export class LitGridLayout extends LitElement {
     this._currentLayout = condenseLayout(newLayout);
   }
 
+  private _itemResizeStart(ev: any): void {
+    this._placeholder = this._currentLayout.find(
+      (item) => item.key === ev.currentTarget.key
+    );
+  }
+
   private _itemResize(ev: any): void {
     const { newWidth, newHeight } = ev.detail;
 
@@ -121,17 +136,32 @@ export class LitGridLayout extends LitElement {
 
     const itemLayout = this._currentLayout[itemIndex];
 
-    this._currentLayout[itemIndex] = {
+    const newItemLayout = {
       ...itemLayout,
       width: newWidth,
       height: newHeight,
     };
 
+    this._currentLayout[itemIndex] = newItemLayout;
+    this._placeholder = newItemLayout;
+
     this._currentLayout = condenseLayout(this._currentLayout);
   }
 
+  private _itemResizeEnd(): void {
+    this._placeholder = undefined;
+  }
+
+  private _itemDragStart(ev: any): void {
+    this._placeholder = this._currentLayout.find(
+      (item) => item.key === ev.currentTarget.key
+    );
+  }
+
+  // TODO: Create custom Event Types
   private _itemDrag(ev: any): void {
     ev.stopPropagation();
+    ev.preventDefault();
     const { newPosX, newPosY } = ev.detail;
 
     const itemKey = ev.currentTarget.key;
@@ -151,6 +181,38 @@ export class LitGridLayout extends LitElement {
     );
 
     this._currentLayout = condenseLayout(newLayout);
+
+    this._placeholder = this._currentLayout.find(
+      (item) => item.key === itemKey
+    );
+  }
+
+  private _itemDragEnd(): void {
+    this._placeholder = undefined;
+  }
+
+  private _renderPlaceHolder(): TemplateResult {
+    if (!this._placeholder) {
+      return html``;
+    }
+
+    return html`
+      <lit-grid-item
+        .width=${this._placeholder.width}
+        .height=${this._placeholder.height}
+        .posY=${this._placeholder.posY}
+        .posX=${this._placeholder.posX}
+        .key=${this._placeholder.key}
+        .parentWidth=${this.clientWidth}
+        .columns=${this.columns}
+        .rowHeight=${this.rowHeight}
+        .margin=${this.margin}
+        .isDraggable=${false}
+        .isResizable=${false}
+        class="placeholder"
+      >
+      </lit-grid-item>
+    `;
   }
 
   static get styles(): CSSResult {
@@ -158,6 +220,12 @@ export class LitGridLayout extends LitElement {
       :host {
         display: block;
         position: relative;
+      }
+
+      .placeholder {
+        background-color: var(--placeholder-background-color, red);
+        opacity: var(--placeholder-background-opacity, 0.2);
+        z-index: 1;
       }
     `;
   }
