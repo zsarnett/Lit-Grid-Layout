@@ -247,8 +247,8 @@ found at http://polymer.github.io/PATENTS.txt
       }
 
       :host([resizing]) {
-        z-index: 3;
         transition-property: transform;
+        z-index: 3;
       }
 
       lit-resizable {
