@@ -115,6 +115,7 @@ export class LitGridItem extends LitElement {
         </lit-draggable>
       `;
     }
+
     return gridItemHTML;
   }
 
