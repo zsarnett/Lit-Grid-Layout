@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 
 import "./lit-draggable";
+import { LGLDomEvent, DraggingEvent } from "./types";
 
 @customElement("lit-draggable-wrapper")
 export class LitDraggableWrapper extends LitElement {
@@ -33,8 +34,8 @@ export class LitDraggableWrapper extends LitElement {
     this.startTop = rect.top - parentRect.top;
   }
 
-  private _drag(ev: MouseEvent | TouchEvent): void {
-    const { deltaX, deltaY } = ev.detail as any;
+  private _drag(ev: LGLDomEvent<DraggingEvent>): void {
+    const { deltaX, deltaY } = ev.detail;
 
     this.style.setProperty(
       "--drag-x",

@@ -8,12 +8,16 @@ import {
   property,
 } from "lit-element";
 
-import "./lit-draggable";
+import type { LGLDomEvent, DraggingEvent } from "./types";
 import { fireEvent } from "./util/fire-event";
+
+import "./lit-draggable";
 
 @customElement("lit-resizable")
 export class LitResizable extends LitElement {
   @property({ attribute: false }) public handle?: HTMLElement;
+
+  @property({ type: Boolean }) public disabled = false;
 
   private startWidth?: number;
 
@@ -23,13 +27,17 @@ export class LitResizable extends LitElement {
     return html`
       <slot></slot>
 
-      <lit-draggable
-        @dragging=${this._resize}
-        @dragStart=${this._resizeStart}
-        @dragEnd=${this._resizeEnd}
-      >
-        ${!this.handle ? "" : html`${this.handle}`}
-      </lit-draggable>
+      ${this.disabled
+        ? ""
+        : html`
+            <lit-draggable
+              @dragging=${this._resize}
+              @dragStart=${this._resizeStart}
+              @dragEnd=${this._resizeEnd}
+            >
+              ${!this.handle ? "" : html`${this.handle}`}
+            </lit-draggable>
+          `}
     `;
   }
 
@@ -40,13 +48,21 @@ export class LitResizable extends LitElement {
     fireEvent(this, "resizeStart");
   }
 
-  private _resize(ev: MouseEvent | TouchEvent): void {
+  private _resize(ev: LGLDomEvent<DraggingEvent>): void {
     ev.stopPropagation();
 
-    const { deltaX, deltaY } = ev.detail as any;
+    if (this.startWidth === undefined || this.startHeight === undefined) {
+      return;
+    }
 
-    const width = this.startWidth! + deltaX;
-    const height = this.startHeight! + deltaY;
+    const { deltaX, deltaY } = ev.detail;
+
+    if (deltaY === 0 && deltaX === 0) {
+      return;
+    }
+
+    const width = this.startWidth + deltaX;
+    const height = this.startHeight + deltaY;
 
     fireEvent(this, "resize", {
       width,
@@ -57,6 +73,8 @@ export class LitResizable extends LitElement {
   }
 
   private _resizeEnd(): void {
+    this.startWidth = undefined;
+    this.startHeight = undefined;
     fireEvent(this, "resizeEnd");
   }
 

@@ -6,12 +6,13 @@ import {
   property,
 } from "lit-element";
 import { fireEvent } from "./util/fire-event";
+import { MouseLocation } from "./types";
 
 @customElement("lit-draggable")
 export class LitDraggable extends LitElement {
   @property({ type: Array }) public grid?: [number, number];
 
-  @property({ type: Boolean, reflect: true }) public isDraggable = true;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   private startX?: number;
 
@@ -20,13 +21,27 @@ export class LitDraggable extends LitElement {
   private _dragging = false;
 
   protected firstUpdated(): void {
-    this.addEventListener("mousedown", this._dragStart.bind(this));
-    this.addEventListener("touchstart", this._dragStart.bind(this));
-    document.addEventListener("mousemove", this._drag.bind(this));
-    document.addEventListener("touchmove", this._drag.bind(this));
-    document.addEventListener("mouseup", this._dragEnd.bind(this));
-    document.addEventListener("touchcancel", this._dragEnd.bind(this));
-    document.addEventListener("touchend", this._dragEnd.bind(this));
+    this.addEventListener("mousedown", this._dragStart.bind(this), {
+      passive: true,
+    });
+    this.addEventListener("touchstart", this._dragStart.bind(this), {
+      passive: true,
+    });
+    document.addEventListener("mousemove", this._drag.bind(this), {
+      passive: true,
+    });
+    document.addEventListener("touchmove", this._drag.bind(this), {
+      passive: true,
+    });
+    document.addEventListener("mouseup", this._dragEnd.bind(this), {
+      passive: true,
+    });
+    document.addEventListener("touchcancel", this._dragEnd.bind(this), {
+      passive: true,
+    });
+    document.addEventListener("touchend", this._dragEnd.bind(this), {
+      passive: true,
+    });
   }
 
   protected render(): TemplateResult {
@@ -34,10 +49,13 @@ export class LitDraggable extends LitElement {
   }
 
   private _dragStart(ev: MouseEvent | TouchEvent): void {
-    ev.stopPropagation();
-    ev.preventDefault();
+    if (ev.type.startsWith("mouse") && (ev as MouseEvent).button !== 0) {
+      return;
+    }
 
-    if (!this.isDraggable) {
+    ev.stopPropagation();
+
+    if (this.disabled) {
       return;
     }
 
@@ -56,9 +74,8 @@ export class LitDraggable extends LitElement {
 
   private _drag(ev: MouseEvent | TouchEvent): void {
     ev.stopPropagation();
-    ev.preventDefault();
 
-    if (!this._dragging || !this.isDraggable) {
+    if (!this._dragging || this.disabled) {
       return;
     }
 
@@ -84,9 +101,8 @@ export class LitDraggable extends LitElement {
 
   private _dragEnd(ev: MouseEvent | TouchEvent): void {
     ev.stopPropagation();
-    ev.preventDefault();
 
-    if (!this._dragging || !this.isDraggable) {
+    if (!this._dragging || this.disabled) {
       return;
     }
 
@@ -95,7 +111,7 @@ export class LitDraggable extends LitElement {
     fireEvent(this, "dragEnd");
   }
 
-  private _getPos(ev: MouseEvent | TouchEvent): any {
+  private _getPos(ev: MouseEvent | TouchEvent): MouseLocation {
     const mouseX = ev.type.startsWith("touch")
       ? (ev as TouchEvent).touches[0].clientX
       : (ev as MouseEvent).clientX;

@@ -136,7 +136,20 @@
         itemEl.style.fontSize = "24px";
         itemEl.style.lineHeight = "var(--item-height)";
         itemEl.key = i.toString();
-        itemEl.innerHTML = i;
+
+        const handle = document.createElement("div");
+        handle.classList.add("drag-handle");
+        handle.style.border = "2px dotted red";
+        handle.style.width = "100%";
+        handle.style.height = "20px";
+        handle.style.boxSizing = "border-box";
+
+        // itemEl.appendChild(handle);
+
+        const number = document.createElement("span");
+        number.innerHTML = i;
+
+        itemEl.appendChild(number);
 
         itemElementArray.push(itemEl);
       }
