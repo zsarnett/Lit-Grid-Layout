@@ -1,12 +1,12 @@
+[![npm version](https://badge.fury.io/js/lit-grid-layout.svg)](https://badge.fury.io/js/lit-grid-layout) ![Build](https://github.com/zsarnett/Lit-Grid-Layout/workflows/Build/badge.svg) [![Known Vulnerabilities](https://snyk.io/test/github/zsarnett/Lit-Grid-Layout/badge.svg?targetFile=package.json)](https://snyk.io/test/github/zsarnett/Lit-Grid-Layout?targetFile=package.json) ![Dependencies](https://david-dm.org/zsarnett/lit-grid-layout.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/0a099815e11e9780102d/maintainability)](https://codeclimate.com/github/zsarnett/Lit-Grid-Layout/maintainability)
+
 # Lit Grid Layout
 
 Draggable and Resizable Grid Layout for Lit Element
 
 ![31bb22ab7750bf9292e982d0cab4a2ea](https://user-images.githubusercontent.com/18730868/88720705-e7512180-d0ea-11ea-9437-5269c2017920.gif)
 [[Demo](https://lit-grid-layout.netlify.app/)]
-
-[![npm version](https://badge.fury.io/js/lit-grid-layout.svg)](https://badge.fury.io/js/lit-grid-layout) ![Build](https://github.com/zsarnett/Lit-Grid-Layout/workflows/Build/badge.svg) [![Known Vulnerabilities](https://snyk.io/test/github/zsarnett/Lit-Grid-Layout/badge.svg?targetFile=package.json)](https://snyk.io/test/github/zsarnett/Lit-Grid-Layout?targetFile=package.json) ![Dependencies](https://david-dm.org/zsarnett/lit-grid-layout.svg)
-[![Maintainability](https://api.codeclimate.com/v1/badges/0a099815e11e9780102d/maintainability)](https://codeclimate.com/github/zsarnett/Lit-Grid-Layout/maintainability)
 
 ### Todo
 
