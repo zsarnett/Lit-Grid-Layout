@@ -2,7 +2,7 @@
 
 Grid Layout for Lit Element
 
-Check out the progress here -> [Demo](https://lit-grid-layout.netlify.app/)
+[[Demo](https://lit-grid-layout.netlify.app/)]
 
 [![npm version](https://badge.fury.io/js/lit-grid-layout.svg)](https://badge.fury.io/js/lit-grid-layout) ![Build](https://github.com/zsarnett/Lit-Grid-Layout/workflows/Build/badge.svg) [![Known Vulnerabilities](https://snyk.io/test/github/zsarnett/Lit-Grid-Layout/badge.svg?targetFile=package.json)](https://snyk.io/test/github/zsarnett/Lit-Grid-Layout?targetFile=package.json) ![Dependencies](https://david-dm.org/zsarnett/lit-grid-layout.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0a099815e11e9780102d/maintainability)](https://codeclimate.com/github/zsarnett/Lit-Grid-Layout/maintainability)
