@@ -2,7 +2,7 @@
 
 Grid Layout for Lit Element
 
-Check out the progress here -> [Demo](https://raw.githack.com/zsarnett/Lit-Grid-Layout/master/index.html)
+Check out the progress here -> [Demo](https://lit-grid-layout.netlify.app/)
 
 ### Todo
 
