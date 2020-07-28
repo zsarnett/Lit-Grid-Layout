@@ -1,6 +1,6 @@
 # Lit Grid Layout
 
-Grid Layout for Lit Element
+Draggable and Resizable Grid Layout for Lit Element
 
 ![31bb22ab7750bf9292e982d0cab4a2ea](https://user-images.githubusercontent.com/18730868/88720705-e7512180-d0ea-11ea-9437-5269c2017920.gif)
 [[Demo](https://lit-grid-layout.netlify.app/)]
