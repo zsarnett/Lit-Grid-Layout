@@ -6,7 +6,7 @@ import {
   property,
 } from "lit-element";
 import { fireEvent } from "./util/fire-event";
-import { MouseLocation } from "./types";
+import { getMouseLocation } from "./util/get-mouse-location";
 
 @customElement("lit-draggable")
 export class LitDraggable extends LitElement {
@@ -59,7 +59,7 @@ export class LitDraggable extends LitElement {
       return;
     }
 
-    const pos = this._getPos(ev);
+    const pos = getMouseLocation(ev);
 
     this.startX = pos.x;
     this.startY = pos.y;
@@ -79,7 +79,7 @@ export class LitDraggable extends LitElement {
       return;
     }
 
-    const pos = this._getPos(ev);
+    const pos = getMouseLocation(ev);
 
     let deltaX = pos.x - this.startX!;
     let deltaY = pos.y - this.startY!;
@@ -109,20 +109,6 @@ export class LitDraggable extends LitElement {
     this._dragging = false;
 
     fireEvent(this, "dragEnd");
-  }
-
-  private _getPos(ev: MouseEvent | TouchEvent): MouseLocation {
-    const mouseX = ev.type.startsWith("touch")
-      ? (ev as TouchEvent).touches[0].clientX
-      : (ev as MouseEvent).clientX;
-    const mouseY = ev.type.startsWith("touch")
-      ? (ev as TouchEvent).touches[0].clientY
-      : (ev as MouseEvent).clientY;
-
-    return {
-      x: mouseX,
-      y: mouseY,
-    };
   }
 }
 

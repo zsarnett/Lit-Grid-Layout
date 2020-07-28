@@ -75,6 +75,7 @@ export class LitResizable extends LitElement {
   private _resizeEnd(): void {
     this.startWidth = undefined;
     this.startHeight = undefined;
+
     fireEvent(this, "resizeEnd");
   }
 
