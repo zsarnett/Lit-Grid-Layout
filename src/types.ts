@@ -48,7 +48,7 @@ export interface ItemResizedEvent {
   newHeight: number;
 }
 
-export interface PositionLocation {
+export interface MouseLocation {
   x: number;
   y: number;
 }
