@@ -13,6 +13,9 @@
   },
   "author": "Zack Arnett",
   "repository": "https://github.com/zsarnett/Lit-Grid-Layout",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "license": "MIT",
   "dependencies": {
     "lit-draggable": "0.0.1",
