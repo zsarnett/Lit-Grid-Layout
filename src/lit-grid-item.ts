@@ -11,8 +11,9 @@ import {
 import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
 import { fireEvent } from "./util/fire-event";
 
-import "./lit-draggable";
-import "./lit-resizable";
+// TODO: Find out how to import both with out custom elements erroring about draggable already defined
+// import "lit-draggable";
+import "lit-resizable";
 
 @customElement("lit-grid-item")
 export class LitGridItem extends LitElement {
