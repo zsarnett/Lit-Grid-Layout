@@ -10,7 +10,14 @@ import {
   PropertyValues,
 } from "lit-element";
 
-import type { LayoutItemElement, Layout, LayoutItem } from "./types";
+import type {
+  LayoutItemElement,
+  Layout,
+  LayoutItem,
+  ItemDraggedEvent,
+  LGLItemDomEvent,
+  ItemResizedEvent,
+} from "./types";
 import { findLayoutBottom } from "./util/find-layout-bottom";
 import { fixLayoutBounds } from "./util/fix-layout-bounds";
 import { condenseLayout } from "./util/condense-layout";
@@ -50,10 +57,19 @@ export class LitGridLayout extends LitElement {
     return btm * this.rowHeight + (btm - 1) * this.margin[1];
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (
+      changedProps.has("layout") &&
+      JSON.stringify(this.layout) === JSON.stringify(this._currentLayout)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    // TODO: Only run SetupLayout if they value of the public layout changes or if the amount of elements changes.
-    // TODO: Update the public layout anytime the _currentLayout changes but block the setupLayout if Layout === currentLayout
 
     if (
       (changedProps.has("resizeHandle") && !this.resizeHandle) ||
@@ -134,13 +150,13 @@ export class LitGridLayout extends LitElement {
     this._currentLayout = condenseLayout(newLayout);
   }
 
-  private _itemResizeStart(ev: any): void {
+  private _itemResizeStart(ev: LGLItemDomEvent<Event>): void {
     this._placeholder = this._currentLayout.find(
       (item) => item.key === ev.currentTarget.key
     );
   }
 
-  private _itemResize(ev: any): void {
+  private _itemResize(ev: LGLItemDomEvent<ItemResizedEvent>): void {
     const { newWidth, newHeight } = ev.detail;
 
     const itemKey = ev.currentTarget.key;
@@ -167,14 +183,13 @@ export class LitGridLayout extends LitElement {
     this._placeholder = undefined;
   }
 
-  private _itemDragStart(ev: any): void {
+  private _itemDragStart(ev: LGLItemDomEvent<Event>): void {
     this._placeholder = this._currentLayout.find(
       (item) => item.key === ev.currentTarget.key
     );
   }
 
-  // TODO: Create custom Event Types
-  private _itemDrag(ev: any): void {
+  private _itemDrag(ev: LGLItemDomEvent<ItemDraggedEvent>): void {
     ev.stopPropagation();
     ev.preventDefault();
     const { newPosX, newPosY } = ev.detail;

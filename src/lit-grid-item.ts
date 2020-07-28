@@ -8,9 +8,11 @@ import {
   property,
 } from "lit-element";
 
+import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
+import { fireEvent } from "./util/fire-event";
+
 import "./lit-draggable";
 import "./lit-resizable";
-import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-grid-item")
 export class LitGridItem extends LitElement {
@@ -109,7 +111,6 @@ export class LitGridItem extends LitElement {
     if (this.isDraggable) {
       gridItemHTML = html`
         <lit-draggable
-          .isDraggable=${this.isDraggable}
           @dragStart=${this._dragStart}
           @dragging=${this._drag}
           @dragEnd=${this._dragEnd}
@@ -128,8 +129,12 @@ export class LitGridItem extends LitElement {
     fireEvent(this, "resizeStart");
   }
 
-  private _resize(ev: any): void {
-    let { width, height } = ev.detail as any;
+  private _resize(ev: LGLDomEvent<ResizingEvent>): void {
+    if (!this._isResizing) {
+      return;
+    }
+
+    let { width, height } = ev.detail;
 
     const minWidthPX = this._getColumnWidth() * this.minWidth;
     const maxWidthPX =
@@ -183,13 +188,18 @@ export class LitGridItem extends LitElement {
     fireEvent(this, "dragStart");
   }
 
-  private _drag(ev: any): void {
+  private _drag(ev: LGLDomEvent<DraggingEvent>): void {
     ev.stopPropagation();
-    if (this._startPosX === undefined || this._startPosY === undefined) {
+    if (
+      this._startPosX === undefined ||
+      this._startPosY === undefined ||
+      this._startLeft === undefined ||
+      this._startTop === undefined
+    ) {
       return;
     }
 
-    const { deltaX, deltaY } = ev.detail as any;
+    const { deltaX, deltaY } = ev.detail;
 
     // Go ahead an update the position of the item, this won't affect the layout
     this.style.setProperty("--item-left", `${this._startLeft + deltaX}px`);
@@ -260,6 +270,10 @@ export class LitGridItem extends LitElement {
       lit-resizable {
         width: 100%;
         height: 100%;
+      }
+
+      lit-draggable {
+        cursor: move;
       }
 
       .handle {

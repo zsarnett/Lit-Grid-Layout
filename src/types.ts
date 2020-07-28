@@ -18,3 +18,37 @@ export interface LayoutItemElement extends HTMLElement {
     posY: number;
   };
 }
+
+export interface LGLDomEvent<T> extends Event {
+  detail: T;
+}
+
+export interface LGLItemDomEvent<T> extends Event {
+  detail: T;
+  currentTarget: LayoutItemElement;
+}
+
+export interface DraggingEvent {
+  deltaX: number;
+  deltaY: number;
+}
+
+export interface ResizingEvent {
+  width: number;
+  height: number;
+}
+
+export interface ItemDraggedEvent {
+  newPosX: number;
+  newPosY: number;
+}
+
+export interface ItemResizedEvent {
+  newWidth: number;
+  newHeight: number;
+}
+
+export interface PositionLocation {
+  x: number;
+  y: number;
+}
