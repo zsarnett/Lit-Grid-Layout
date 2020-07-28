@@ -1,0 +1,217 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "lit-grid-item",
+      "path": "./src\\lit-grid-item.ts",
+      "attributes": [
+        {
+          "name": "width",
+          "type": "number"
+        },
+        {
+          "name": "height",
+          "type": "number"
+        },
+        {
+          "name": "posX",
+          "type": "number"
+        },
+        {
+          "name": "posY",
+          "type": "number"
+        },
+        {
+          "name": "rowHeight",
+          "type": "number"
+        },
+        {
+          "name": "columns",
+          "type": "number"
+        },
+        {
+          "name": "parentWidth",
+          "type": "number"
+        },
+        {
+          "name": "margin",
+          "type": "[number, number]"
+        },
+        {
+          "name": "minWidth",
+          "type": "number",
+          "default": "1"
+        },
+        {
+          "name": "minHeight",
+          "type": "number",
+          "default": "1"
+        },
+        {
+          "name": "isDraggable",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "isResizable",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "key",
+          "type": "string"
+        }
+      ],
+      "properties": [
+        {
+          "name": "width",
+          "attribute": "width",
+          "type": "number"
+        },
+        {
+          "name": "height",
+          "attribute": "height",
+          "type": "number"
+        },
+        {
+          "name": "posX",
+          "attribute": "posX",
+          "type": "number"
+        },
+        {
+          "name": "posY",
+          "attribute": "posY",
+          "type": "number"
+        },
+        {
+          "name": "rowHeight",
+          "attribute": "rowHeight",
+          "type": "number"
+        },
+        {
+          "name": "columns",
+          "attribute": "columns",
+          "type": "number"
+        },
+        {
+          "name": "parentWidth",
+          "attribute": "parentWidth",
+          "type": "number"
+        },
+        {
+          "name": "margin",
+          "attribute": "margin",
+          "type": "[number, number]"
+        },
+        {
+          "name": "minWidth",
+          "attribute": "minWidth",
+          "type": "number",
+          "default": "1"
+        },
+        {
+          "name": "minHeight",
+          "attribute": "minHeight",
+          "type": "number",
+          "default": "1"
+        },
+        {
+          "name": "isDraggable",
+          "attribute": "isDraggable",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "isResizable",
+          "attribute": "isResizable",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "resizeHandle",
+          "type": "HTMLElement"
+        },
+        {
+          "name": "key",
+          "attribute": "key",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "lit-grid-layout",
+      "path": "./src\\lit-grid-layout.ts",
+      "attributes": [
+        {
+          "name": "layout",
+          "type": "Layout",
+          "default": "[]"
+        },
+        {
+          "name": "elements",
+          "type": "LayoutItemElement[]",
+          "default": "[]"
+        },
+        {
+          "name": "rowHeight",
+          "type": "number",
+          "default": "30"
+        },
+        {
+          "name": "columns",
+          "type": "number",
+          "default": "12"
+        },
+        {
+          "name": "margin",
+          "type": "[number, number]",
+          "default": "[10,10]"
+        }
+      ],
+      "properties": [
+        {
+          "name": "layout",
+          "attribute": "layout",
+          "type": "Layout",
+          "default": "[]"
+        },
+        {
+          "name": "elements",
+          "attribute": "elements",
+          "type": "LayoutItemElement[]",
+          "default": "[]"
+        },
+        {
+          "name": "rowHeight",
+          "attribute": "rowHeight",
+          "type": "number",
+          "default": "30"
+        },
+        {
+          "name": "columns",
+          "attribute": "columns",
+          "type": "number",
+          "default": "12"
+        },
+        {
+          "name": "margin",
+          "attribute": "margin",
+          "type": "[number, number]",
+          "default": "[10,10]"
+        },
+        {
+          "name": "resizeHandle",
+          "type": "HTMLElement | undefined"
+        },
+        {
+          "name": "childrenElements",
+          "type": "LayoutItemElement[]"
+        },
+        {
+          "name": "layoutHeight",
+          "type": "number"
+        }
+      ]
+    }
+  ]
+}
