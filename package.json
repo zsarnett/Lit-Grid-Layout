@@ -2,7 +2,9 @@
   "name": "lit-grid-layout",
   "version": "1.0.1",
   "description": "A Grid Layout for Lit Element",
-  "main": "resizable.bundles.js",
+  "main": "dist/lit-grid-layout.js",
+  "module": "dist/lit-grid-layout.js",
+  "type": "module",
   "scripts": {
     "build": "npm run build-ts && npm run build-rollup",
     "build-ts": "tsc",
@@ -13,15 +15,12 @@
   },
   "author": "Zack Arnett",
   "repository": "https://github.com/zsarnett/Lit-Grid-Layout",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "license": "MIT",
   "dependencies": {
     "lit-draggable": "0.0.3",
     "lit-element": "^2.3.1",
     "lit-html": "^1.2.1",
-    "lit-resizable": "0.0.2"
+    "lit-resizable": "0.0.3"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.4.0",
