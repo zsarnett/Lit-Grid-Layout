@@ -127,6 +127,8 @@ export class LitGridItem extends LitElement {
   private _resizeStart(): void {
     this.isDraggable = false;
     this._isResizing = true;
+    this._isDragging = false;
+
     fireEvent(this, "resizeStart");
   }
 
@@ -175,8 +177,10 @@ export class LitGridItem extends LitElement {
   }
 
   private _dragStart(): void {
-    // Get the starting numbers and use these in calcs
-    // This is so we don't keep adding the delta as the props are updated from the layout
+    if (!this.isDraggable) {
+      return;
+    }
+
     const rect = this.getBoundingClientRect();
     const parentRect = this.offsetParent!.getBoundingClientRect();
     this._startLeft = rect.left - parentRect.left;
@@ -190,12 +194,12 @@ export class LitGridItem extends LitElement {
   }
 
   private _drag(ev: LGLDomEvent<DraggingEvent>): void {
-    ev.stopPropagation();
     if (
       this._startPosX === undefined ||
       this._startPosY === undefined ||
       this._startLeft === undefined ||
-      this._startTop === undefined
+      this._startTop === undefined ||
+      !this.isDraggable
     ) {
       return;
     }
@@ -254,8 +258,6 @@ export class LitGridItem extends LitElement {
         transform: translate(var(--item-left), var(--item-top));
         transition: var(--grid-item-transition, all 200ms);
         z-index: 2;
-        user-select: none;
-        touch-action: none;
       }
 
       :host([dragging]) {
@@ -277,16 +279,6 @@ export class LitGridItem extends LitElement {
 
       lit-draggable {
         cursor: move;
-      }
-
-      .handle {
-        width: 10px;
-        height: 10px;
-        background: red;
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        cursor: se-resize;
       }
     `;
   }
