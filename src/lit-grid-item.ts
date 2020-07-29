@@ -254,6 +254,8 @@ export class LitGridItem extends LitElement {
         transform: translate(var(--item-left), var(--item-top));
         transition: var(--grid-item-transition, all 200ms);
         z-index: 2;
+        user-select: none;
+        touch-action: none;
       }
 
       :host([dragging]) {
