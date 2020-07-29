@@ -17,10 +17,10 @@
   "repository": "https://github.com/zsarnett/Lit-Grid-Layout",
   "license": "MIT",
   "dependencies": {
-    "lit-draggable": "0.0.3",
+    "lit-draggable": "0.0.4",
     "lit-element": "^2.3.1",
     "lit-html": "^1.2.1",
-    "lit-resizable": "0.0.3"
+    "lit-resizable": "0.0.4"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.4.0",
