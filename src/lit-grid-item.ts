@@ -37,6 +37,10 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Number }) public minHeight = 1;
 
+  @property({ type: Number }) public maxWidth?: number;
+
+  @property({ type: Number }) public maxHeight?: number;
+
   @property({ type: Boolean }) public isDraggable = true;
 
   @property({ type: Boolean }) public isResizable = true;
@@ -96,6 +100,18 @@ export class LitGridItem extends LitElement {
   protected render(): TemplateResult {
     let gridItemHTML = html`<slot></slot>`;
 
+    if (this.isDraggable) {
+      gridItemHTML = html`
+        <lit-draggable
+          @dragStart=${this._dragStart}
+          @dragging=${this._drag}
+          @dragEnd=${this._dragEnd}
+        >
+          ${gridItemHTML}
+        </lit-draggable>
+      `;
+    }
+
     if (this.isResizable) {
       gridItemHTML = html`
         <lit-resizable
@@ -106,18 +122,6 @@ export class LitGridItem extends LitElement {
         >
           ${gridItemHTML}
         </lit-resizable>
-      `;
-    }
-
-    if (this.isDraggable) {
-      gridItemHTML = html`
-        <lit-draggable
-          @dragStart=${this._dragStart}
-          @dragging=${this._drag}
-          @dragEnd=${this._dragEnd}
-        >
-          ${gridItemHTML}
-        </lit-draggable>
       `;
     }
 
@@ -139,16 +143,27 @@ export class LitGridItem extends LitElement {
 
     let { width, height } = ev.detail;
 
-    const minWidthPX = this._getColumnWidth() * this.minWidth;
-    const maxWidthPX =
-      (this._getColumnWidth() + this.margin[0]) * (this.columns - this.posX) -
+    const minWidthPX =
+      (this._getColumnWidth() + this.margin[0]) * this.minWidth -
       this.margin[0];
-    const minHeightPX = this.rowHeight * this.minHeight;
+    const maxWidthUnits =
+      this.maxWidth !== undefined
+        ? Math.min(this.maxWidth, this.columns - this.posX)
+        : this.columns - this.posX;
+    const maxWidthPX =
+      (this._getColumnWidth() + this.margin[0]) * maxWidthUnits -
+      this.margin[0];
+    const minHeightPX =
+      (this.rowHeight + this.margin[1]) * this.minHeight - this.margin[1];
+    const maxHeightPX =
+      (this.rowHeight + this.margin[1]) * (this.maxHeight || Infinity) -
+      this.margin[1];
 
     // update width and height to be within contraints
     width = Math.max(minWidthPX, width);
     width = Math.min(maxWidthPX, width);
     height = Math.max(minHeightPX, height);
+    height = Math.min(maxHeightPX, height);
 
     // Go ahead an update the width and height of the element (this won't affect the layout)
     this.style.setProperty("--item-width", `${width}px`);

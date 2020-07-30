@@ -5,6 +5,10 @@ export interface LayoutItem {
   posY: number;
   key: string;
   hasMoved?: boolean;
+  minWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  maxHeight?: number;
 }
 
 export type Layout = Array<LayoutItem>;

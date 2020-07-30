@@ -26,11 +26,16 @@
 
       for (let i = 0; i < 25; i++) {
         var y = Math.ceil(Math.random() * 4) + 1;
+        var x = Math.floor(Math.random() * 3) + 1;
         itemArray.push({
           posX: Math.round(Math.random() * 5) * 2,
           posY: Math.floor(i / 6) * y,
-          width: 2,
-          height: y,
+          width: x + 1,
+          height: y + 1,
+          minWidth: x,
+          minHeight: y,
+          maxHeight: Math.floor(Math.random() * Math.floor(2)) + y + 1,
+          maxWidth: Math.floor(Math.random() * Math.floor(2)) + x + 1,
           key: i.toString(),
         });
 

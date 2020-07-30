@@ -31,13 +31,23 @@ export class LitGridLayout extends LitElement {
 
   @property({ type: Array }) public elements: LayoutItemElement[] = [];
 
+  @property({ type: Array }) public margin: [number, number] = [10, 10];
+
   @property({ type: Number }) public rowHeight = 30;
 
   @property({ type: Number }) public columns = 12;
 
-  @property({ type: Array }) public margin: [number, number] = [10, 10];
+  @property({ type: Boolean }) public dragDisabled = false;
+
+  @property({ type: Boolean }) public resizeDisabled = false;
 
   @property({ attribute: false }) public resizeHandle?: HTMLElement;
+
+  @property({ type: Boolean, attribute: true, reflect: true })
+  public resizing?: boolean = false;
+
+  @property({ type: Boolean, attribute: true, reflect: true })
+  public dragging?: boolean = false;
 
   @internalProperty() private _currentLayout: Layout = [];
 
@@ -72,15 +82,6 @@ export class LitGridLayout extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (
-      (changedProps.has("resizeHandle") && !this.resizeHandle) ||
-      !this.resizeHandle
-    ) {
-      const handle = document.createElement("div");
-      handle.classList.add("default-handle");
-      this.resizeHandle = handle;
-    }
-
     if (changedProps.has("layout") || !this._currentLayout) {
       this.setupLayout();
     }
@@ -89,14 +90,13 @@ export class LitGridLayout extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._currentLayout?.length || !this.resizeHandle) {
+    if (!this._currentLayout?.length) {
       return html``;
     }
 
     return html`
       ${this.childrenElements.map((element, idx) => {
         const item = this._currentLayout[idx];
-        const handle = this.resizeHandle!.cloneNode(true) as HTMLElement;
 
         return html`
           <lit-grid-item
@@ -104,12 +104,18 @@ export class LitGridLayout extends LitElement {
             .height=${item.height}
             .posY=${item.posY}
             .posX=${item.posX}
+            .minWidth=${item.minWidth || 1}
+            .minHeight=${item.minHeight || 1}
+            .maxWidth=${item.maxHeight}
+            .maxHeight=${item.maxHeight}
             .key=${item.key}
             .parentWidth=${this.clientWidth}
             .columns=${this.columns}
             .rowHeight=${this.rowHeight}
             .margin=${this.margin}
-            .resizeHandle=${handle}
+            .isDraggable=${!this.dragDisabled}
+            .isResizable=${!this.resizeDisabled}
+            .resizeHandle=${this.resizeHandle}
             @resizeStart=${this._itemResizeStart}
             @resize=${this._itemResize}
             @resizeEnd=${this._itemResizeEnd}
@@ -251,6 +257,14 @@ export class LitGridLayout extends LitElement {
       :host {
         display: block;
         position: relative;
+      }
+
+      :host([dragging]),
+      :host([resizing]),
+      :host([dragging]) lit-grid-item,
+      :host([resizing]) lit-grid-item {
+        user-select: none;
+        touch-action: none;
       }
 
       .placeholder {
