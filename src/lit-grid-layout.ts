@@ -53,13 +53,14 @@ export class LitGridLayout extends LitElement {
   }
 
   get layoutHeight(): number {
-    const btm = findLayoutBottom(this.layout);
+    const btm = findLayoutBottom(this._currentLayout);
     return btm * this.rowHeight + (btm - 1) * this.margin[1];
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
       changedProps.has("layout") &&
+      this.layout.length !== 0 &&
       JSON.stringify(this.layout) === JSON.stringify(this._currentLayout)
     ) {
       return false;
@@ -80,7 +81,7 @@ export class LitGridLayout extends LitElement {
       this.resizeHandle = handle;
     }
 
-    if (changedProps.has("layout")) {
+    if (changedProps.has("layout") || !this._currentLayout) {
       this.setupLayout();
     }
 
