@@ -6,6 +6,12 @@ export const fixLayoutBounds = (
   cols: number
 ): LayoutItem[] => {
   for (const item of layout) {
+    // Width is greater than amount of columns
+    // set the width to be number of columns
+    if (item.width > cols) {
+      item.width = cols;
+    }
+
     // Out of bounds right
     // set the x to be against the right side
     if (item.posX + item.width > cols) {

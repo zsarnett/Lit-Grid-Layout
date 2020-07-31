@@ -24,6 +24,8 @@ import { condenseLayout } from "./util/condense-layout";
 import { moveItem } from "./util/move-item";
 
 import "./lit-grid-item";
+import { installResizeObserver } from "./util/install-resize-observer";
+import { debounce } from "./util/debounce";
 
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
@@ -32,6 +34,11 @@ export class LitGridLayout extends LitElement {
   @property({ type: Array }) public elements: LayoutItemElement[] = [];
 
   @property({ type: Array }) public margin: [number, number] = [10, 10];
+
+  @property({ type: Array }) public containerPadding: [number, number] = [
+    20,
+    20,
+  ];
 
   @property({ type: Number }) public rowHeight = 30;
 
@@ -49,9 +56,13 @@ export class LitGridLayout extends LitElement {
   @property({ type: Boolean, attribute: true, reflect: true })
   public dragging?: boolean = false;
 
+  @internalProperty() private _width = 0;
+
   @internalProperty() private _currentLayout: Layout = [];
 
   @internalProperty() private _placeholder?: LayoutItem;
+
+  private _resizeObserver?: ResizeObserver;
 
   // Get items supplied by property and from any children
   get childrenElements(): LayoutItemElement[] {
@@ -64,7 +75,22 @@ export class LitGridLayout extends LitElement {
 
   get layoutHeight(): number {
     const btm = findLayoutBottom(this._currentLayout);
-    return btm * this.rowHeight + (btm - 1) * this.margin[1];
+    return (
+      btm * this.rowHeight +
+      (btm - 1) * this.margin[1] +
+      this.containerPadding[1] * 2
+    );
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -109,10 +135,11 @@ export class LitGridLayout extends LitElement {
             .maxWidth=${item.maxHeight}
             .maxHeight=${item.maxHeight}
             .key=${item.key}
-            .parentWidth=${this.clientWidth}
+            .parentWidth=${this._width!}
             .columns=${this.columns}
             .rowHeight=${this.rowHeight}
             .margin=${this.margin}
+            .containerPadding=${this.containerPadding}
             .isDraggable=${!this.dragDisabled}
             .isResizable=${!this.resizeDisabled}
             .resizeHandle=${this.resizeHandle}
@@ -244,12 +271,29 @@ export class LitGridLayout extends LitElement {
         .columns=${this.columns}
         .rowHeight=${this.rowHeight}
         .margin=${this.margin}
+        .containerPadding=${this.containerPadding}
         .isDraggable=${false}
         .isResizable=${false}
         class="placeholder"
       >
       </lit-grid-item>
     `;
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measure(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this);
+  }
+
+  private _measure(): void {
+    if (this.offsetParent) {
+      this._width = this.offsetParent.clientWidth;
+    }
   }
 
   static get styles(): CSSResult {

@@ -6,8 +6,15 @@
     <title>Lit Grid Layout</title>
     <script src="dist/lit-grid-layout.js" type="module"></script>
   </head>
-  <body>
-    <div class="layout" style="padding: 20px; background-color: #eee;"></div>
+  <body style="margin: 0;">
+    <div
+      class="layout"
+      style="
+        background-color: #eee;
+        box-sizing: border-box;
+        position: relative;
+      "
+    ></div>
 
     <script>
       function getRandomColor() {
@@ -30,12 +37,13 @@
         itemArray.push({
           posX: Math.round(Math.random() * 5) * 2,
           posY: Math.floor(i / 6) * y,
-          width: x + 1,
+          width: i === 10 ? 15 : x + 1,
           height: y + 1,
-          minWidth: x,
+          minWidth: i === 10 ? 10 : x,
           minHeight: y,
           maxHeight: Math.floor(Math.random() * Math.floor(2)) + y + 1,
-          maxWidth: Math.floor(Math.random() * Math.floor(2)) + x + 1,
+          maxWidth:
+            i === 10 ? 15 : Math.floor(Math.random() * Math.floor(2)) + x + 1,
           key: i.toString(),
         });
 
@@ -51,15 +59,6 @@
         itemEl.style.fontSize = "24px";
         itemEl.style.lineHeight = "var(--item-height)";
         itemEl.key = i.toString();
-
-        const handle = document.createElement("div");
-        handle.classList.add("drag-handle");
-        handle.style.border = "2px dotted red";
-        handle.style.width = "100%";
-        handle.style.height = "20px";
-        handle.style.boxSizing = "border-box";
-
-        // itemEl.appendChild(handle);
 
         const number = document.createElement("span");
         number.innerHTML = i;

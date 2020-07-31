@@ -7,6 +7,7 @@ export default {
   output: {
     file: "dist/lit-grid-layout.js",
     format: "es",
+    inlineDynamicImports: true,
   },
   plugins: [
     typescript(),
