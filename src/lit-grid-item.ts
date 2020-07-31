@@ -6,6 +6,7 @@ import {
   CSSResult,
   css,
   property,
+  PropertyValues,
 } from "lit-element";
 
 import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
@@ -47,7 +48,7 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Boolean }) public isResizable = true;
 
-  @property({ attribute: false }) public resizeHandle!: HTMLElement;
+  @property({ attribute: false }) public resizeHandle?: HTMLElement;
 
   @property() public key!: string;
 
@@ -74,11 +75,15 @@ export class LitGridItem extends LitElement {
     );
   }
 
-  protected updated(): void {
-    if (this._isDragging) {
-      return;
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (!changedProps.has("_isDragging") && this._isDragging) {
+      return false;
     }
 
+    return true;
+  }
+
+  protected updated(): void {
     this.style.setProperty(
       "--item-left",
       `${Math.round(
@@ -106,10 +111,8 @@ export class LitGridItem extends LitElement {
     this.style.setProperty(
       "--item-width",
       `${
-        !this.parentWidth
-          ? 0
-          : this.width * this._columnWidth +
-            Math.max(0, this.width - 1) * this.margin[0]
+        this.width * this._columnWidth +
+        Math.max(0, this.width - 1) * this.margin[0]
       }px`
     );
     this.style.setProperty(

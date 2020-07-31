@@ -291,8 +291,36 @@ export class LitGridLayout extends LitElement {
   }
 
   private _measure(): void {
+    // eslint-disable-next-line no-console
+    console.log("Offset Parent: ", this.offsetParent);
+    // eslint-disable-next-line no-console
+    console.log("Parent Element: ", this.parentElement);
+
     if (this.offsetParent) {
+      // eslint-disable-next-line no-console
+      console.log(
+        "Offset Parent Client Width: ",
+        this.offsetParent.clientWidth
+      );
+      // eslint-disable-next-line no-console
+      console.log(
+        "Offset Parent Scroll Width: ",
+        this.offsetParent.scrollWidth
+      );
       this._width = this.offsetParent.clientWidth;
+    }
+
+    if (this.parentElement) {
+      // eslint-disable-next-line no-console
+      console.log(
+        "Parent Element Client Width: ",
+        this.parentElement.clientWidth
+      );
+      // eslint-disable-next-line no-console
+      console.log(
+        "Parent Element Scroll Width: ",
+        this.parentElement.scrollWidth
+      );
     }
   }
 

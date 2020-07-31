@@ -1,6 +1,6 @@
 {
   "name": "lit-grid-layout",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A Grid Layout for Lit Element",
   "main": "dist/lit-grid-layout.js",
   "module": "dist/lit-grid-layout.js",
