@@ -29,7 +29,7 @@ import { debounce } from "./util/debounce";
 
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
-  @property({ type: Array }) public layout: Layout = [];
+  @property({ type: Array }) public layout?: Layout;
 
   @property({ type: Array }) public elements: LayoutItemElement[] = [];
 
@@ -96,6 +96,7 @@ export class LitGridLayout extends LitElement {
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
       changedProps.has("layout") &&
+      this.layout !== undefined &&
       this.layout.length !== 0 &&
       JSON.stringify(this.layout) === JSON.stringify(this._currentLayout)
     ) {
@@ -164,7 +165,7 @@ export class LitGridLayout extends LitElement {
     // Create new Layout
     // Iterate over all children and find item in prev layout or create new item
     for (const element of this.childrenElements) {
-      let layoutItem = this.layout.find((item) => item.key === element.key);
+      let layoutItem = this.layout!.find((item) => item.key === element.key);
 
       if (!layoutItem) {
         const itemProps = element.grid || {
