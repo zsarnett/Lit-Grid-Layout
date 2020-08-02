@@ -1,7 +1,25 @@
 {
   "name": "lit-grid-layout",
-  "version": "1.0.9",
+  "version": "1.0.10",
+  "author": "Zack Arnett",
+  "license": "MIT",
   "description": "A Grid Layout for Lit Element",
+  "keywords": [
+    "typescript",
+    "javascript",
+    "grid",
+    "layout",
+    "lit-element"
+  ],
+  "homepage": "https://github.com/zsarnett/Lit-Grid-Layout",
+  "repository": "https://github.com/zsarnett/Lit-Grid-Layout",
+  "bugs": {
+    "url": "https://github.com/zsarnett/Lit-Grid-Layout/issues",
+    "email": "zackarnett@zackarnett.com"
+  },
+  "files": [
+    "dist"
+  ],
   "main": "dist/lit-grid-layout.js",
   "module": "dist/lit-grid-layout.js",
   "type": "module",
@@ -13,29 +31,28 @@
     "watch-rollup": "rollup -cw",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix"
   },
-  "author": "Zack Arnett",
-  "repository": "https://github.com/zsarnett/Lit-Grid-Layout",
-  "license": "MIT",
   "dependencies": {
-    "@types/resize-observer-browser": "^0.1.3",
-    "lit-draggable": "^0.0.11",
+    "lit-draggable": "^0.0.13",
     "lit-element": "^2.3.1",
     "lit-html": "^1.2.1",
-    "lit-resizable": "^0.0.13",
-    "resize-observer-polyfill": "^1.5.1"
+    "lit-resizable": "^0.0.15"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/plugin-typescript": "^5.0.2",
+    "@types/resize-observer-browser": "^0.1.3",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
-    "eslint": "^7.5.0",
+    "eslint": "^7.6.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "prettier": "^2.0.5",
+    "resize-observer-polyfill": "^1.5.1",
     "rollup": "^2.23.0",
     "rollup-plugin-terser": "^6.1.0",
     "ts-lit-plugin": "^1.2.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "rollup-plugin-filesize": "^9.0.2",
+    "rollup-plugin-minify-html-literals": "^1.2.4"
   }
 }

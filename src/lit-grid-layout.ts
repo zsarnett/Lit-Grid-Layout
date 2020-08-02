@@ -31,7 +31,7 @@ import { debounce } from "./util/debounce";
 export class LitGridLayout extends LitElement {
   @property({ type: Array }) public layout?: Layout;
 
-  @property({ type: Array }) public elements: LayoutItemElement[] = [];
+  @property({ type: Array }) public items: LayoutItemElement[] = [];
 
   @property({ type: Array }) public margin: [number, number] = [10, 10];
 
@@ -64,11 +64,10 @@ export class LitGridLayout extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  // Get items supplied by property and from any children
   get childrenElements(): LayoutItemElement[] {
-    return this.elements.concat(
+    return this.items.concat(
       ...Array.prototype.filter.call(this.children, (e: LayoutItemElement) =>
-        e.classList.contains("lit-grid-item")
+        e.classList.contains("grid-item")
       )
     );
   }
@@ -122,8 +121,11 @@ export class LitGridLayout extends LitElement {
     }
 
     return html`
-      ${this.childrenElements.map((element, idx) => {
-        const item = this._currentLayout[idx];
+      ${this.childrenElements.map((element) => {
+        const item = this._currentLayout.find((i) => i.key === element.key);
+        if (!item) {
+          return html``;
+        }
 
         return html`
           <lit-grid-item
@@ -292,36 +294,8 @@ export class LitGridLayout extends LitElement {
   }
 
   private _measure(): void {
-    // eslint-disable-next-line no-console
-    console.log("Offset Parent: ", this.offsetParent);
-    // eslint-disable-next-line no-console
-    console.log("Parent Element: ", this.parentElement);
-
     if (this.offsetParent) {
-      // eslint-disable-next-line no-console
-      console.log(
-        "Offset Parent Client Width: ",
-        this.offsetParent.clientWidth
-      );
-      // eslint-disable-next-line no-console
-      console.log(
-        "Offset Parent Scroll Width: ",
-        this.offsetParent.scrollWidth
-      );
       this._width = this.offsetParent.clientWidth;
-    }
-
-    if (this.parentElement) {
-      // eslint-disable-next-line no-console
-      console.log(
-        "Parent Element Client Width: ",
-        this.parentElement.clientWidth
-      );
-      // eslint-disable-next-line no-console
-      console.log(
-        "Parent Element Scroll Width: ",
-        this.parentElement.scrollWidth
-      );
     }
   }
 

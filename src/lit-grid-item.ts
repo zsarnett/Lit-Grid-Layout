@@ -58,6 +58,9 @@ export class LitGridItem extends LitElement {
   @property({ attribute: "resizing", reflect: true, type: Boolean })
   private _isResizing = false;
 
+  @property({ attribute: "finished", reflect: true, type: Boolean })
+  private _firstLayoutFinished = false;
+
   private _startTop?: number;
 
   private _startLeft?: number;
@@ -122,6 +125,10 @@ export class LitGridItem extends LitElement {
         Math.max(0, this.height - 1) * this.margin[1]
       }px`
     );
+
+    if (!this._firstLayoutFinished && this.parentWidth > 0) {
+      setTimeout(() => (this._firstLayoutFinished = true), 200);
+    }
   }
 
   protected render(): TemplateResult {
@@ -290,6 +297,7 @@ export class LitGridItem extends LitElement {
         transform: translate(var(--item-left), var(--item-top));
         transition: var(--grid-item-transition, all 200ms);
         z-index: 2;
+        opacity: 0;
       }
 
       :host([dragging]) {
@@ -302,6 +310,10 @@ export class LitGridItem extends LitElement {
         transition-property: transform;
         z-index: 3;
         opacity: var(--grid-item-resizing-opacity, 0.8);
+      }
+
+      :host([finished]) {
+        opacity: 1;
       }
 
       lit-resizable {
