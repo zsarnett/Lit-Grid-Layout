@@ -50,6 +50,8 @@ export class LitGridLayout extends LitElement {
 
   @property({ attribute: false }) public resizeHandle?: HTMLElement;
 
+  @property({ attribute: false }) public dragHandle?: string;
+
   @property({ type: Boolean, attribute: true, reflect: true })
   public resizing?: boolean = false;
 
@@ -146,6 +148,7 @@ export class LitGridLayout extends LitElement {
             .isDraggable=${!this.dragDisabled}
             .isResizable=${!this.resizeDisabled}
             .resizeHandle=${this.resizeHandle}
+            .dragHandle=${this.dragHandle}
             @resizeStart=${this._itemResizeStart}
             @resize=${this._itemResize}
             @resizeEnd=${this._itemResizeEnd}

@@ -58,6 +58,7 @@
         itemEl.style.textAlign = "center";
         itemEl.style.fontSize = "24px";
         itemEl.style.lineHeight = "var(--item-height)";
+        itemEl.style.position = "relative";
         itemEl.key = i.toString();
 
         const number = document.createElement("span");
@@ -65,11 +66,26 @@
 
         itemEl.appendChild(number);
 
+        const handle = document.createElement("div");
+        handle.classList.add("drag-handle");
+        handle.style.border = "2px dotted red";
+        handle.style.width = "100%";
+        handle.style.height = "20px";
+        handle.style.boxSizing = "border-box";
+        handle.style.position = "absolute";
+        handle.style.top = "0";
+        handle.style.left = "0";
+        handle.style.right = "0";
+        handle.style.cursor = "move";
+
+        itemEl.appendChild(handle);
+
         itemElementArray.push(itemEl);
       }
 
       el.layout = itemArray;
       el.items = itemElementArray;
+      el.dragHandle = ".drag-handle";
       document.querySelector(".layout").appendChild(el);
     </script>
   </body>

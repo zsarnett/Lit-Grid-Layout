@@ -50,6 +50,8 @@ export class LitGridItem extends LitElement {
 
   @property({ attribute: false }) public resizeHandle?: HTMLElement;
 
+  @property({ attribute: false }) public dragHandle?: string;
+
   @property() public key!: string;
 
   @property({ attribute: "dragging", reflect: true, type: Boolean })
@@ -137,6 +139,7 @@ export class LitGridItem extends LitElement {
     if (this.isDraggable) {
       gridItemHTML = html`
         <lit-draggable
+          .handle=${this.dragHandle}
           @dragStart=${this._dragStart}
           @dragging=${this._drag}
           @dragEnd=${this._dragEnd}
@@ -322,7 +325,7 @@ export class LitGridItem extends LitElement {
       }
 
       lit-draggable {
-        cursor: move;
+        /* cursor: move; */
       }
     `;
   }
