@@ -14,6 +14,6 @@ Draggable and Resizable Grid Layout for Lit Element
 - [x] Ability to drag the Grid Items around the DOM and regenerate the layout when it is moved.
 - [x] Ability to resize the Grid Items and regenerate the layout when moved
 - [ ] Ability to specify an element for the drag handle
-- [ ] Fix Mobile resizing
+- [x] Fix Mobile resizing
 - [ ] Test the code, review the code, make sure we are production ready
   - [ ] Add edge cases, only update if we need to, checks in place to not break
