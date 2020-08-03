@@ -105,7 +105,9 @@ export class LitGridItem extends LitElement {
       changedProps.has("minWidth") ||
       changedProps.has("maxWidth") ||
       changedProps.has("maxHeight") ||
-      changedProps.has("rowHeight")
+      changedProps.has("rowHeight") ||
+      changedProps.has("posX") ||
+      (changedProps.has("_isDragging") && !this._isDragging)
     ) {
       this._columnWidth =
         (this.parentWidth -
