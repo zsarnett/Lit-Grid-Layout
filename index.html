@@ -31,7 +31,7 @@
       const itemArray = [];
       const itemElementArray = [];
 
-      for (let i = 0; i < 25; i++) {
+      for (let i = 0; i < 50; i++) {
         var y = Math.ceil(Math.random() * 4) + 1;
         var x = Math.floor(Math.random() * 3) + 1;
         itemArray.push({
@@ -48,18 +48,10 @@
         });
 
         const itemEl = document.createElement("div");
-
         itemEl.classList.add("lit-grid-item");
-        itemEl.style.backgroundColor = "#ccc";
-        itemEl.style.border = "1px solid black";
-        itemEl.style.height = "100%";
-        itemEl.style.width = "100%";
-        itemEl.style.margin = "auto";
-        itemEl.style.textAlign = "center";
-        itemEl.style.fontSize = "24px";
-        itemEl.style.lineHeight = "var(--item-height)";
-        itemEl.style.position = "relative";
         itemEl.key = i.toString();
+        itemEl.style.cssText =
+          "background-color: #ccc; border: 1px solid black; height: 100%; width: 100%; margin: auto; text-align: center; font-size: 24px; line-height: var(--item-height); position: relative; ";
 
         const number = document.createElement("span");
         number.innerHTML = i;
@@ -68,18 +60,23 @@
 
         const handle = document.createElement("div");
         handle.classList.add("drag-handle");
-        handle.style.border = "2px dotted red";
-        handle.style.width = "100%";
-        handle.style.height = "20px";
-        handle.style.boxSizing = "border-box";
-        handle.style.position = "absolute";
-        handle.style.top = "0";
-        handle.style.left = "0";
-        handle.style.right = "0";
-        handle.style.cursor = "move";
+        handle.style.cssText =
+          "position: absolute; top: 0; left: 0; cursor: move; line-height: 0";
+        handle.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-grid-dots" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#607D8B" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z"/>
+          <circle cx="5" cy="5" r="1" />
+          <circle cx="12" cy="5" r="1" />
+          <circle cx="19" cy="5" r="1" />
+          <circle cx="5" cy="12" r="1" />
+          <circle cx="12" cy="12" r="1" />
+          <circle cx="19" cy="12" r="1" />
+          <circle cx="5" cy="19" r="1" />
+          <circle cx="12" cy="19" r="1" />
+          <circle cx="19" cy="19" r="1" />
+        </svg>`;
 
         itemEl.appendChild(handle);
-
         itemElementArray.push(itemEl);
       }
 

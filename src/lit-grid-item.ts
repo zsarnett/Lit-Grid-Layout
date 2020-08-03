@@ -71,14 +71,19 @@ export class LitGridItem extends LitElement {
 
   private _startPosY?: number;
 
-  get _columnWidth(): number {
-    return (
-      (this.parentWidth -
-        this.margin[0] * (this.columns - 1) -
-        this.containerPadding[0] * 2) /
-      this.columns
-    );
-  }
+  private _minWidthPX?: number;
+
+  private _maxWidthPX?: number;
+
+  private _minHeightPX?: number;
+
+  private _maxHeightPX?: number;
+
+  private _fullColumnWidth?: number;
+
+  private _fullRowHeight?: number;
+
+  private _columnWidth?: number;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (!changedProps.has("_isDragging") && this._isDragging) {
@@ -88,12 +93,47 @@ export class LitGridItem extends LitElement {
     return true;
   }
 
-  protected updated(): void {
+  protected updated(changedProps: PropertyValues): void {
+    // Set up all the calculations that are needed in the drag/resize events
+    // No need to calculate them all the time unless they change
+    if (
+      changedProps.has("parentWidth") ||
+      changedProps.has("margin") ||
+      changedProps.has("columns") ||
+      changedProps.has("containerPadding") ||
+      changedProps.has("minHeight") ||
+      changedProps.has("minWidth") ||
+      changedProps.has("maxWidth") ||
+      changedProps.has("maxHeight") ||
+      changedProps.has("rowHeight")
+    ) {
+      this._columnWidth =
+        (this.parentWidth -
+          this.margin[0] * (this.columns - 1) -
+          this.containerPadding[0] * 2) /
+        this.columns;
+
+      this._fullColumnWidth = this._columnWidth + this.margin[0];
+      this._fullRowHeight = this.rowHeight + this.margin[1];
+
+      this._minWidthPX =
+        this._fullColumnWidth! * this.minWidth - this.margin[0];
+      const maxWidthUnits =
+        this.maxWidth !== undefined
+          ? Math.min(this.maxWidth, this.columns - this.posX)
+          : this.columns - this.posX;
+      this._maxWidthPX =
+        this._fullColumnWidth! * maxWidthUnits - this.margin[0];
+      this._minHeightPX =
+        this._fullRowHeight! * this.minHeight - this.margin[1];
+      this._maxHeightPX =
+        this._fullRowHeight! * (this.maxHeight || Infinity) - this.margin[1];
+    }
+
     this.style.setProperty(
       "--item-left",
       `${Math.round(
-        this.posX * (this._columnWidth + this.margin[0]) +
-          this.containerPadding[0]
+        this.posX * this._fullColumnWidth! + this.containerPadding[0]
       )}px`
     );
 
@@ -103,8 +143,7 @@ export class LitGridItem extends LitElement {
         !this.parentWidth
           ? 0
           : Math.round(
-              this.posY * (this.rowHeight + this.margin[1]) +
-                this.containerPadding[1]
+              this.posY * this._fullRowHeight! + this.containerPadding[1]
             )
       }px`
     );
@@ -116,7 +155,7 @@ export class LitGridItem extends LitElement {
     this.style.setProperty(
       "--item-width",
       `${
-        this.width * this._columnWidth +
+        this.width * this._columnWidth! +
         Math.max(0, this.width - 1) * this.margin[0]
       }px`
     );
@@ -180,25 +219,11 @@ export class LitGridItem extends LitElement {
 
     let { width, height } = ev.detail;
 
-    const minWidthPX =
-      (this._columnWidth + this.margin[0]) * this.minWidth - this.margin[0];
-    const maxWidthUnits =
-      this.maxWidth !== undefined
-        ? Math.min(this.maxWidth, this.columns - this.posX)
-        : this.columns - this.posX;
-    const maxWidthPX =
-      (this._columnWidth + this.margin[0]) * maxWidthUnits - this.margin[0];
-    const minHeightPX =
-      (this.rowHeight + this.margin[1]) * this.minHeight - this.margin[1];
-    const maxHeightPX =
-      (this.rowHeight + this.margin[1]) * (this.maxHeight || Infinity) -
-      this.margin[1];
-
     // update width and height to be within contraints
-    width = Math.max(minWidthPX, width);
-    width = Math.min(maxWidthPX, width);
-    height = Math.max(minHeightPX, height);
-    height = Math.min(maxHeightPX, height);
+    width = Math.max(this._minWidthPX!, width);
+    width = Math.min(this._maxWidthPX!, width);
+    height = Math.max(this._minHeightPX!, height);
+    height = Math.min(this._maxHeightPX!, height);
 
     // Go ahead an update the width and height of the element (this won't affect the layout)
     this.style.setProperty("--item-width", `${width}px`);
@@ -206,10 +231,10 @@ export class LitGridItem extends LitElement {
 
     // Calculate the new width and height in grid units
     const newWidth = Math.round(
-      (width + this.margin[0]) / (this._columnWidth + this.margin[0])
+      (width + this.margin[0]) / this._fullColumnWidth!
     );
     const newHeight = Math.round(
-      (height + this.margin[1]) / (this.rowHeight + this.margin[1])
+      (height + this.margin[1]) / this._fullRowHeight!
     );
 
     // if the grid units don't change, don't send the update to the layout
@@ -261,8 +286,8 @@ export class LitGridItem extends LitElement {
     this.style.setProperty("--item-top", `${this._startTop + deltaY}px`);
 
     // Get the change in grid units from the change in pixels
-    const deltaCols = Math.round(deltaX / (this._columnWidth + this.margin[0]));
-    const deltaRows = Math.round(deltaY / (this.rowHeight + this.margin[1]));
+    const deltaCols = Math.round(deltaX / this._fullColumnWidth!);
+    const deltaRows = Math.round(deltaY / this._fullRowHeight!);
 
     // If change in grid units from both axis are 0, no need to go forward
     if (!deltaRows && !deltaCols) {
@@ -322,10 +347,6 @@ export class LitGridItem extends LitElement {
       lit-resizable {
         width: 100%;
         height: 100%;
-      }
-
-      lit-draggable {
-        /* cursor: move; */
       }
     `;
   }
