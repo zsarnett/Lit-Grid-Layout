@@ -9,10 +9,11 @@ import {
   svg,
 } from "lit-element";
 
-import "./lit-draggable";
+import { fireEvent } from "./util/fire-event";
 
 import type { LGLDomEvent, DraggingEvent } from "./types";
-import { fireEvent } from "./util/fire-event";
+
+import "./lit-draggable";
 
 @customElement("lit-resizable")
 export class LitResizable extends LitElement {

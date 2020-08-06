@@ -12,8 +12,9 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
 import { fireEvent } from "./util/fire-event";
+
+import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
 
 import "./lit-draggable";
 import "./lit-resizable";

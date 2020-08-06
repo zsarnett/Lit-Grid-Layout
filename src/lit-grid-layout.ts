@@ -10,6 +10,15 @@ import {
   PropertyValues,
 } from "lit-element";
 
+import { findLayoutBottom } from "./util/find-layout-bottom";
+import { fixLayoutBounds } from "./util/fix-layout-bounds";
+import { condenseLayout } from "./util/condense-layout";
+import { moveItem } from "./util/move-item";
+import { installResizeObserver } from "./util/install-resize-observer";
+import { debounce } from "./util/debounce";
+import { fireEvent } from "./util/fire-event";
+import { getMasonryLayout } from "./util/get-masonry-layout";
+
 import type {
   LayoutItemElement,
   Layout,
@@ -19,14 +28,6 @@ import type {
   ItemResizedEvent,
   LayoutObject,
 } from "./types";
-import { findLayoutBottom } from "./util/find-layout-bottom";
-import { fixLayoutBounds } from "./util/fix-layout-bounds";
-import { condenseLayout } from "./util/condense-layout";
-import { moveItem } from "./util/move-item";
-import { installResizeObserver } from "./util/install-resize-observer";
-import { debounce } from "./util/debounce";
-import { fireEvent } from "./util/fire-event";
-import { getMasonryLayout } from "./util/get-masonry-layout";
 
 import "./lit-grid-item";
 
