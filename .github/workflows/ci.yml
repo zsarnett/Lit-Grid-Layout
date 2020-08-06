@@ -27,8 +27,6 @@ jobs:
           CI: true
       - name: Run eslint
         run: npm run lint
-      - name: Run tsc
-        run: npm run build
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
@@ -46,6 +44,6 @@ jobs:
           CI: true
 
       - name: Build Application
-        run: npm run build-rollup
+        run: npm run build
         env:
           CI: true
