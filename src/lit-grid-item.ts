@@ -7,14 +7,16 @@ import {
   css,
   property,
   PropertyValues,
+  internalProperty,
+  query,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
 import { fireEvent } from "./util/fire-event";
 
-// TODO: Find out how to import both with out custom elements erroring about draggable already defined
-// import "lit-draggable";
-import "lit-resizable";
+import "./lit-draggable";
+import "./lit-resizable";
 
 @customElement("lit-grid-item")
 export class LitGridItem extends LitElement {
@@ -48,20 +50,27 @@ export class LitGridItem extends LitElement {
 
   @property({ type: Boolean }) public isResizable = true;
 
+  @property({ type: Boolean }) private _isDragging = false;
+
+  @property({ type: Boolean }) private _isResizing = false;
+
+  @property({ type: Boolean }) private _firstLayoutFinished = false;
+
   @property({ attribute: false }) public resizeHandle?: HTMLElement;
 
   @property({ attribute: false }) public dragHandle?: string;
 
   @property() public key!: string;
 
-  @property({ attribute: "dragging", reflect: true, type: Boolean })
-  private _isDragging = false;
+  @query(".grid-item-wrapper") private gridItem!: HTMLElement;
 
-  @property({ attribute: "resizing", reflect: true, type: Boolean })
-  private _isResizing = false;
+  @internalProperty() private _itemTopPX?: number;
 
-  @property({ attribute: "finished", reflect: true, type: Boolean })
-  private _firstLayoutFinished = false;
+  @internalProperty() private _itemLeftPX?: number;
+
+  @internalProperty() private _itemWidthPX?: number;
+
+  @internalProperty() private _itemHeightPX?: number;
 
   private _startTop?: number;
 
@@ -84,14 +93,6 @@ export class LitGridItem extends LitElement {
   private _fullRowHeight?: number;
 
   private _columnWidth?: number;
-
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (!changedProps.has("_isDragging") && this._isDragging) {
-      return false;
-    }
-
-    return true;
-  }
 
   protected updated(changedProps: PropertyValues): void {
     // Set up all the calculations that are needed in the drag/resize events
@@ -132,42 +133,29 @@ export class LitGridItem extends LitElement {
         this._fullRowHeight! * (this.maxHeight || Infinity) - this.margin[1];
     }
 
-    this.style.setProperty(
-      "--item-left",
-      `${Math.round(
-        this.posX * this._fullColumnWidth! + this.containerPadding[0]
-      )}px`
+    if (this._isDragging) {
+      return;
+    }
+
+    this._itemLeftPX = Math.round(
+      this.posX * this._fullColumnWidth! + this.containerPadding[0]
     );
 
-    this.style.setProperty(
-      "--item-top",
-      `${
-        !this.parentWidth
-          ? 0
-          : Math.round(
-              this.posY * this._fullRowHeight! + this.containerPadding[1]
-            )
-      }px`
-    );
+    this._itemTopPX = !this.parentWidth
+      ? 0
+      : Math.round(this.posY * this._fullRowHeight! + this.containerPadding[1]);
 
     if (this._isResizing) {
       return;
     }
 
-    this.style.setProperty(
-      "--item-width",
-      `${
-        this.width * this._columnWidth! +
-        Math.max(0, this.width - 1) * this.margin[0]
-      }px`
-    );
-    this.style.setProperty(
-      "--item-height",
-      `${
-        this.height * this.rowHeight +
-        Math.max(0, this.height - 1) * this.margin[1]
-      }px`
-    );
+    this._itemWidthPX =
+      this.width * this._columnWidth! +
+      Math.max(0, this.width - 1) * this.margin[0];
+
+    this._itemHeightPX =
+      this.height * this.rowHeight +
+      Math.max(0, this.height - 1) * this.margin[1];
 
     if (!this._firstLayoutFinished && this.parentWidth > 0) {
       setTimeout(() => (this._firstLayoutFinished = true), 200);
@@ -203,7 +191,18 @@ export class LitGridItem extends LitElement {
       `;
     }
 
-    return gridItemHTML;
+    return html`<div
+      class="grid-item-wrapper ${classMap({
+        dragging: this._isDragging,
+        resizing: this._isResizing,
+        finished: this._firstLayoutFinished,
+      })}"
+      style="transform: translate(${this._itemLeftPX}px, ${this
+        ._itemTopPX}px); width: ${this._itemWidthPX}px; height: ${this
+        ._itemHeightPX}px"
+    >
+      ${gridItemHTML}
+    </div>`;
   }
 
   private _resizeStart(): void {
@@ -228,8 +227,8 @@ export class LitGridItem extends LitElement {
     height = Math.min(this._maxHeightPX!, height);
 
     // Go ahead an update the width and height of the element (this won't affect the layout)
-    this.style.setProperty("--item-width", `${width}px`);
-    this.style.setProperty("--item-height", `${height}px`);
+    this._itemWidthPX = width;
+    this._itemHeightPX = height;
 
     // Calculate the new width and height in grid units
     const newWidth = Math.round(
@@ -258,7 +257,7 @@ export class LitGridItem extends LitElement {
       return;
     }
 
-    const rect = this.getBoundingClientRect();
+    const rect = this.gridItem.getBoundingClientRect();
     const parentRect = this.offsetParent!.getBoundingClientRect();
     this._startLeft = rect.left - parentRect.left;
     this._startTop = rect.top - parentRect.top;
@@ -284,8 +283,8 @@ export class LitGridItem extends LitElement {
     const { deltaX, deltaY } = ev.detail;
 
     // Go ahead an update the position of the item, this won't affect the layout
-    this.style.setProperty("--item-left", `${this._startLeft + deltaX}px`);
-    this.style.setProperty("--item-top", `${this._startTop + deltaY}px`);
+    this._itemLeftPX = this._startLeft + deltaX;
+    this._itemTopPX = this._startTop + deltaY;
 
     // Get the change in grid units from the change in pixels
     const deltaCols = Math.round(deltaX / this._fullColumnWidth!);
@@ -320,30 +319,33 @@ export class LitGridItem extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      .grid-item-wrapper {
         position: absolute;
-        width: var(--item-width);
-        height: var(--item-height);
-        transform: translate(var(--item-left), var(--item-top));
         transition: var(--grid-item-transition, all 200ms);
         z-index: 2;
         opacity: 0;
       }
 
-      :host([dragging]) {
+      .grid-item-wrapper.dragging {
         transition: none;
         z-index: 3;
-        opacity: var(--grid-item-dragging-opacity, 0.8);
+        opacity: var(--grid-item-dragging-opacity, 0.8) !important;
       }
 
-      :host([resizing]) {
+      .grid-item-wrapper.resizing {
         transition-property: transform;
         z-index: 3;
-        opacity: var(--grid-item-resizing-opacity, 0.8);
+        opacity: var(--grid-item-resizing-opacity, 0.8) !important;
       }
 
-      :host([finished]) {
+      .grid-item-wrapper.finished {
         opacity: 1;
+      }
+
+      :host([placeholder]) .grid-item-wrapper {
+        background-color: var(--placeholder-background-color, red);
+        opacity: var(--placeholder-background-opacity, 0.2);
+        z-index: 1;
       }
 
       lit-resizable {

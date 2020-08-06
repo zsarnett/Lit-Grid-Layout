@@ -17,20 +17,24 @@ import type {
   ItemDraggedEvent,
   LGLItemDomEvent,
   ItemResizedEvent,
+  LayoutObject,
 } from "./types";
 import { findLayoutBottom } from "./util/find-layout-bottom";
 import { fixLayoutBounds } from "./util/fix-layout-bounds";
 import { condenseLayout } from "./util/condense-layout";
 import { moveItem } from "./util/move-item";
-
-import "./lit-grid-item";
 import { installResizeObserver } from "./util/install-resize-observer";
 import { debounce } from "./util/debounce";
 import { fireEvent } from "./util/fire-event";
+import { getMasonryLayout } from "./util/get-masonry-layout";
+
+import "./lit-grid-item";
 
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
   @property({ type: Array }) public layout?: Layout;
+
+  @property() public sortStyle: "default" | "masonry" = "masonry";
 
   @property({ type: Array }) public items: LayoutItemElement[] = [];
 
@@ -62,6 +66,8 @@ export class LitGridLayout extends LitElement {
   @internalProperty() private _width = 0;
 
   @internalProperty() private _layout: Layout = [];
+
+  @internalProperty() private _layoutObject: LayoutObject = {};
 
   @internalProperty() private _placeholder?: LayoutItem;
 
@@ -103,7 +109,11 @@ export class LitGridLayout extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("layout")) {
-      this.setupLayout();
+      this._setupLayout();
+    }
+
+    if (changedProps.has("columns")) {
+      this._updateLayout(this._layout);
     }
 
     this.style.height = `${this._layoutHeight}px`;
@@ -116,7 +126,7 @@ export class LitGridLayout extends LitElement {
 
     return html`
       ${this._childrenElements.map((element) => {
-        const item = this._layout.find((i) => i.key === element.key);
+        const item = this._layoutObject[element.key];
         if (!item) {
           return html``;
         }
@@ -156,8 +166,8 @@ export class LitGridLayout extends LitElement {
     `;
   }
 
-  private setupLayout(): void {
-    let newLayout: Layout = [];
+  private _setupLayout(): void {
+    const newLayout: Layout = [];
 
     // Create new Layout
     // Iterate over all children and find item in prev layout or create new item
@@ -178,8 +188,34 @@ export class LitGridLayout extends LitElement {
       newLayout.push(layoutItem);
     }
 
-    newLayout = fixLayoutBounds(newLayout, this.columns);
+    this._updateLayout(newLayout, true);
+  }
+
+  private _updateLayout(
+    layout: Layout,
+    fix = false,
+    style = this.sortStyle
+  ): void {
+    if (style === "masonry") {
+      this._layout = getMasonryLayout(layout, this.columns);
+
+      // Create an object so we can quickly find the item in render
+      this._layoutObject = {};
+      for (const item of this._layout) {
+        this._layoutObject[item.key] = item;
+      }
+
+      return;
+    }
+
+    const newLayout = fix ? fixLayoutBounds(layout, this.columns) : layout;
     this._layout = condenseLayout(newLayout);
+
+    // Create an object so we can quickly find the item in render
+    this._layoutObject = {};
+    for (const item of this._layout) {
+      this._layoutObject[item.key] = item;
+    }
   }
 
   private _itemResizeStart(ev: LGLItemDomEvent<Event>): void {
@@ -206,7 +242,7 @@ export class LitGridLayout extends LitElement {
     this._layout[this._oldItemIndex] = newItemLayout;
     this._placeholder = newItemLayout;
 
-    this._layout = condenseLayout(this._layout);
+    this._updateLayout(this._layout, false, "default");
   }
 
   private _itemResizeEnd(): void {
@@ -244,7 +280,7 @@ export class LitGridLayout extends LitElement {
       true
     );
 
-    this._layout = condenseLayout(newLayout);
+    this._updateLayout(newLayout, false, "default");
 
     this._oldItemLayout = this._layout.find(
       (item) => item.key === this._oldItemLayout!.key
@@ -280,7 +316,7 @@ export class LitGridLayout extends LitElement {
         .containerPadding=${this.containerPadding}
         .isDraggable=${false}
         .isResizable=${false}
-        class="placeholder"
+        placeholder
       >
       </lit-grid-item>
     `;
@@ -315,12 +351,6 @@ export class LitGridLayout extends LitElement {
       :host([resizing]) lit-grid-item {
         user-select: none;
         touch-action: none;
-      }
-
-      .placeholder {
-        background-color: var(--placeholder-background-color, red);
-        opacity: var(--placeholder-background-opacity, 0.2);
-        z-index: 1;
       }
     `;
   }

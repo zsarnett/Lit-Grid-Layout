@@ -2,13 +2,13 @@ import type { Layout, LayoutItem } from "../types";
 import { moveItem } from "./move-item";
 import { getItemItersect } from "./get-item-intersect";
 
-export function moveItemAwayFromIntersect(
+export const moveItemAwayFromIntersect = (
   layout: Layout,
   intersectItem: LayoutItem,
   itemToMove: LayoutItem,
   cols: number,
   isUserMove: boolean
-): Layout {
+): Layout => {
   if (isUserMove) {
     isUserMove = false;
 
@@ -40,4 +40,4 @@ export function moveItemAwayFromIntersect(
     cols,
     isUserMove
   );
-}
+};

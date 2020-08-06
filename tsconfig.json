@@ -4,8 +4,10 @@
     "module": "esnext",
     "moduleResolution": "node",
     "lib": ["es2017", "dom"],
+    "outDir": "dist",
     "sourceMap": true,
-    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
@@ -29,5 +31,6 @@
         }
       }
     ]
-  }
+  },
+  "include": ["./src/*"]
 }

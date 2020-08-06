@@ -10,8 +10,11 @@ export interface LayoutItem {
   minHeight?: number;
   maxHeight?: number;
 }
-
 export type Layout = Array<LayoutItem>;
+
+export interface LayoutObject {
+  [key: string]: LayoutItem;
+}
 
 export interface LayoutItemElement extends HTMLElement {
   key: string;
@@ -56,3 +59,10 @@ export interface MouseLocation {
   x: number;
   y: number;
 }
+
+export interface MouseTouchLocation {
+  x: number;
+  y: number;
+}
+
+export type EventHandler<T> = (e: T) => void | false;

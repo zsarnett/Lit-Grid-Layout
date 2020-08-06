@@ -1,6 +1,6 @@
 import type { Layout } from "../types";
 
-export function sortLayout(layout: Layout): Layout {
+export const sortLayout = (layout: Layout): Layout => {
   return layout.slice(0).sort(function (a, b) {
     if (a.posY > b.posY || (a.posY === b.posY && a.posX > b.posX)) {
       return 1;
@@ -9,4 +9,4 @@ export function sortLayout(layout: Layout): Layout {
     }
     return -1;
   });
-}
+};

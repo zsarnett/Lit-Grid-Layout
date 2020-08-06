@@ -3,14 +3,14 @@ import { sortLayout } from "./sort-layout";
 import { getAllIntersects } from "./get-all-intersects";
 import { moveItemAwayFromIntersect } from "./move-item-away-from-intersect";
 
-export function moveItem(
+export const moveItem = (
   layout: Layout,
   item: LayoutItem,
   newPosX: number | undefined,
   newPosY: number | undefined,
   columns: number,
   isUserMove: boolean
-): Layout {
+): Layout => {
   if (item.posY === newPosY && item.posX === newPosX) {
     return layout;
   }
@@ -56,4 +56,4 @@ export function moveItem(
   }
 
   return layout;
-}
+};

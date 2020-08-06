@@ -35,9 +35,9 @@
         var y = Math.ceil(Math.random() * 4) + 1;
         var x = Math.floor(Math.random() * 3) + 1;
         itemArray.push({
-          posX: Math.round(Math.random() * 5) * 2,
+          posX: 3 * (i % 4),
           posY: Math.floor(i / 6) * y,
-          width: i === 10 ? 15 : x + 1,
+          width: 3,
           height: y + 1,
           // minWidth: i === 10 ? 10 : x,
           // minHeight: y,
@@ -51,7 +51,7 @@
         itemEl.classList.add("lit-grid-item");
         itemEl.key = i.toString();
         itemEl.style.cssText =
-          "background-color: #ccc; border: 1px solid black; height: 100%; width: 100%; margin: auto; text-align: center; font-size: 24px; line-height: var(--item-height); position: relative; ";
+          "background-color: #ccc; border: 1px solid black; height: 100%; width: 100%; font-size: 24px; display: flex; position: relative; justify-content: center; align-items: center";
 
         const number = document.createElement("span");
         number.innerHTML = i;
@@ -83,7 +83,16 @@
       el.layout = itemArray;
       el.items = itemElementArray;
       el.dragHandle = ".drag-handle";
+      el.sortStyle = "masonry";
       document.querySelector(".layout").appendChild(el);
+
+      // setInterval(() => {
+      //   const array = [6, 9, 12];
+      //   const el = document.querySelector("lit-grid-layout");
+      //   const columns = array[Math.floor(Math.random() * 3)];
+      //   console.log(el, columns);
+      //   el.columns = columns;
+      // }, 5000);
     </script>
   </body>
 </html>
