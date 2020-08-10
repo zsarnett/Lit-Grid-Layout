@@ -327,13 +327,13 @@ export class LitGridLayout extends LitElement {
     if (!this._resizeObserver) {
       await installResizeObserver();
       this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measure(), 250, false)
+        debounce(() => this._measureLayoutWidth(), 250, false)
       );
     }
     this._resizeObserver.observe(this);
   }
 
-  private _measure(): void {
+  private _measureLayoutWidth(): void {
     if (this.offsetParent) {
       this._width = this.offsetParent.clientWidth;
     }
