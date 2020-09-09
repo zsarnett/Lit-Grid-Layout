@@ -32,7 +32,7 @@
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix"
   },
   "dependencies": {
-    "lit-element": "^2.3.1",
+    "lit-element": "^2.4.0",
     "lit-html": "^1.2.1"
   },
   "devDependencies": {
