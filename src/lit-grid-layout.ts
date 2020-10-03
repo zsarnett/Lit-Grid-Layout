@@ -1,35 +1,32 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
-  LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
   internalProperty,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { findLayoutBottom } from "./util/find-layout-bottom";
-import { fixLayoutBounds } from "./util/fix-layout-bounds";
-import { condenseLayout } from "./util/condense-layout";
-import { moveItem } from "./util/move-item";
-import { installResizeObserver } from "./util/install-resize-observer";
-import { debounce } from "./util/debounce";
-import { fireEvent } from "./util/fire-event";
-import { getMasonryLayout } from "./util/get-masonry-layout";
-
+import "./lit-grid-item";
 import type {
-  LayoutItemElement,
+  ItemDraggedEvent,
+  ItemResizedEvent,
   Layout,
   LayoutItem,
-  ItemDraggedEvent,
-  LGLItemDomEvent,
-  ItemResizedEvent,
+  LayoutItemElement,
   LayoutObject,
+  LGLItemDomEvent,
 } from "./types";
-
-import "./lit-grid-item";
+import { condenseLayout } from "./util/condense-layout";
+import { debounce } from "./util/debounce";
+import { findLayoutBottom } from "./util/find-layout-bottom";
+import { fireEvent } from "./util/fire-event";
+import { fixLayoutBounds } from "./util/fix-layout-bounds";
+import { getMasonryLayout } from "./util/get-masonry-layout";
+import { installResizeObserver } from "./util/install-resize-observer";
+import { moveItem } from "./util/move-item";
 
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
@@ -190,6 +187,7 @@ export class LitGridLayout extends LitElement {
     }
 
     this._updateLayout(newLayout, true);
+    fireEvent(this, "layout-changed", { layout: this._layout });
   }
 
   private _updateLayout(
@@ -199,18 +197,10 @@ export class LitGridLayout extends LitElement {
   ): void {
     if (style === "masonry") {
       this._layout = getMasonryLayout(layout, this.columns);
-
-      // Create an object so we can quickly find the item in render
-      this._layoutObject = {};
-      for (const item of this._layout) {
-        this._layoutObject[item.key] = item;
-      }
-
-      return;
+    } else {
+      const newLayout = fix ? fixLayoutBounds(layout, this.columns) : layout;
+      this._layout = condenseLayout(newLayout);
     }
-
-    const newLayout = fix ? fixLayoutBounds(layout, this.columns) : layout;
-    this._layout = condenseLayout(newLayout);
 
     // Create an object so we can quickly find the item in render
     this._layoutObject = {};
@@ -247,11 +237,14 @@ export class LitGridLayout extends LitElement {
   }
 
   private _itemResizeEnd(): void {
+    fireEvent(this, "item-changed", {
+      item: this._placeholder,
+      layout: this._layout,
+    });
+
     this._placeholder = undefined;
     this._oldItemLayout = undefined;
     this._oldItemIndex = undefined;
-
-    fireEvent(this, "layout-changed", { layout: this._layout });
   }
 
   private _itemDragStart(ev: LGLItemDomEvent<Event>): void {
@@ -291,11 +284,14 @@ export class LitGridLayout extends LitElement {
   }
 
   private _itemDragEnd(): void {
+    fireEvent(this, "item-changed", {
+      item: this._placeholder,
+      layout: this._layout,
+    });
+
     this._placeholder = undefined;
     this._oldItemLayout = undefined;
     this._oldItemIndex = undefined;
-
-    fireEvent(this, "layout-changed", { layout: this._layout });
   }
 
   private _renderPlaceHolder(): TemplateResult {
