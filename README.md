@@ -18,3 +18,9 @@ Draggable and Resizable Grid Layout for Lit Element
 - [x] Fix Mobile resizing
 - [ ] Test the code, review the code, make sure we are production ready
   - [ ] Add edge cases, only update if we need to, checks in place to not break
+
+### Note
+
+This library has not been fully released. I will not be including any breaking changes or release notes as this is being actively developed. Please star the repo and set up watch for releases. I will release the main version as 1.2. This will be after I fully integrate and finalize the implementaion into Home Assistant
+
+Please consider sponsoring me via Github Sponsors to show support for this repo.
