@@ -2,10 +2,9 @@ import {
   customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
+  TemplateResult,
 } from "lit-element";
-
 import { fireEvent } from "./util/fire-event";
 import { getMouseTouchLocation } from "./util/get-mouse-touch-location";
 import { getTouchIdentifier } from "./util/get-touch-identifier";
@@ -73,7 +72,7 @@ export class LitDraggable extends LitElement {
     if (
       this.handle &&
       !matchesSelectorAndParentsTo(
-        ev.target! as Node,
+        ev.currentTarget! as Node,
         this.handle,
         this.offsetParent as Node
       )
