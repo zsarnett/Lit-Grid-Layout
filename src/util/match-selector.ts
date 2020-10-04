@@ -24,6 +24,10 @@ export const matchesSelectorAndParentsTo = (
   baseNode: Node
 ): boolean => {
   let node: Node | null = el;
+  console.log(el);
+  console.log(selector);
+  console.log(baseNode);
+
   do {
     // For testing in shadow dom, TODO: Remove
     // eslint-disable-next-line no-console

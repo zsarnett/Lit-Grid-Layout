@@ -69,6 +69,8 @@ export class LitDraggable extends LitElement {
       return;
     }
 
+    console.log(ev);
+
     if (
       this.handle &&
       !matchesSelectorAndParentsTo(
