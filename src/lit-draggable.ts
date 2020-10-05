@@ -69,20 +69,9 @@ export class LitDraggable extends LitElement {
       return;
     }
 
-    console.log("ev", ev);
-    console.log("ev path", ev.path);
-    console.log("ev composed path", ev.composedPath());
-    console.log("current target", ev.currentTarget);
-    console.log("target ", ev.target);
-    console.log("toelement", ev.toElement);
-
     if (
       this.handle &&
-      !matchesSelectorAndParentsTo(
-        ev.currentTarget! as Node,
-        this.handle,
-        this.offsetParent as Node
-      )
+      !matchesSelectorAndParentsTo(ev, this.handle, this.offsetParent as Node)
     ) {
       return;
     }

@@ -19,19 +19,20 @@ const matchesSelector = (el: Node, selector: string): boolean => {
 };
 
 export const matchesSelectorAndParentsTo = (
-  el: Node,
+  ev: MouseEvent | TouchEvent,
   selector: string,
   baseNode: Node
 ): boolean => {
-  let node: Node | null = el;
-  console.log(el);
-  console.log(selector);
-  console.log(baseNode);
+  const path = ev.composedPath().reverse();
 
-  do {
-    // For testing in shadow dom, TODO: Remove
+  while (path.length) {
+    const node: Node | null = path.pop() as Node;
+
+    // Testing Shadow Root
     // eslint-disable-next-line no-console
-    console.log("Selector: ", selector, "Node: ", node);
+    console.log("Element: ", node, " Selector: ", selector);
+    // eslint-disable-next-line no-console
+    console.log("Event:", ev);
 
     if (matchesSelector(node, selector)) {
       return true;
@@ -40,9 +41,7 @@ export const matchesSelectorAndParentsTo = (
     if (node === baseNode) {
       return false;
     }
-
-    node = node.parentNode;
-  } while (node);
+  }
 
   return false;
 };
