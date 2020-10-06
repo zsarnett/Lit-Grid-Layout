@@ -1,23 +1,20 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
   PropertyValues,
-  internalProperty,
   query,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import { fireEvent } from "./util/fire-event";
-
-import type { LGLDomEvent, DraggingEvent, ResizingEvent } from "./types";
-
 import "./lit-draggable";
 import "./lit-resizable";
+import type { DraggingEvent, LGLDomEvent, ResizingEvent } from "./types";
+import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-grid-item")
 export class LitGridItem extends LitElement {
@@ -180,9 +177,10 @@ export class LitGridItem extends LitElement {
     }
 
     if (this.isResizable) {
+      const resizeHandle = this.resizeHandle?.cloneNode(true) as HTMLElement;
       gridItemHTML = html`
         <lit-resizable
-          .handle=${this.resizeHandle}
+          .handle=${resizeHandle}
           @resizeStart=${this._resizeStart}
           @resize=${this._resize}
           @resizeEnd=${this._resizeEnd}

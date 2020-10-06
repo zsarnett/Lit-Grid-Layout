@@ -1,19 +1,16 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
   svg,
+  TemplateResult,
 } from "lit-element";
-
-import { fireEvent } from "./util/fire-event";
-
-import type { LGLDomEvent, DraggingEvent } from "./types";
-
 import "./lit-draggable";
+import type { DraggingEvent, LGLDomEvent } from "./types";
+import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-resizable")
 export class LitResizable extends LitElement {
