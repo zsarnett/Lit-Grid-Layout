@@ -112,8 +112,10 @@ export class LitResizable extends LitElement {
         top: var(--resize-handle-postion-top, unset);
         bottom: var(--resize-handle-position-bottom, 0);
         right: var(--resize-handle-postion-right, 0);
-        width: var(--resize-handle-width, 18px);
-        height: var(--resize-handle-height, 18px);
+        width: var(--resize-handle-size, 18px);
+        height: var(--resize-handle-size, 18px);
+        z-index: var(--resize-handle-z-index, 5);
+        opacity: var(--resize-handle-opacity, 1);
         user-select: none;
       }
 
