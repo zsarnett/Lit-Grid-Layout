@@ -1,4 +1,4 @@
-import { Layout, LayoutItem } from "../types";
+import type { Layout, LayoutItem } from "../types";
 import { sortLayout } from "./sort-layout";
 
 export const getMasonryLayout = (layout: Layout, columns: number): Layout => {

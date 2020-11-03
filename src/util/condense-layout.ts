@@ -1,6 +1,6 @@
 // Fill in any gaps in the LayoutItem array
 
-import type { LayoutItem, Layout } from "../types";
+import type { Layout, LayoutItem } from "../types";
 import { getItemItersect } from "./get-item-intersect";
 import { resolveIntersection } from "./resolve-intersection";
 import { sortLayout } from "./sort-layout";
