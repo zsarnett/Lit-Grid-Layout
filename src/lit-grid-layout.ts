@@ -9,16 +9,18 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { nothing } from "lit-html";
+import { repeat } from "lit-html/directives/repeat";
 import "./lit-grid-item";
 import type {
   ItemDraggedEvent,
+  ItemRenderer,
   ItemResizedEvent,
   Layout,
   LayoutItem,
-  LayoutItemElement,
-  LayoutObject,
   LGLItemDomEvent,
 } from "./types";
+import { areLayoutsDifferent } from "./util/are-layouts-different";
 import { condenseLayout } from "./util/condense-layout";
 import { debounce } from "./util/debounce";
 import { findLayoutBottom } from "./util/find-layout-bottom";
@@ -33,8 +35,6 @@ export class LitGridLayout extends LitElement {
   @property({ type: Array }) public layout?: Layout;
 
   @property() public sortStyle: "default" | "masonry" = "masonry";
-
-  @property({ type: Array }) public items: LayoutItemElement[] = [];
 
   @property({ type: Array }) public margin: [number, number] = [10, 10];
 
@@ -61,11 +61,11 @@ export class LitGridLayout extends LitElement {
   @property({ type: Boolean, attribute: true, reflect: true })
   public dragging?: boolean = false;
 
+  @property() public itemRenderer?: ItemRenderer;
+
   @internalProperty() private _width = 0;
 
   @internalProperty() private _layout: Layout = [];
-
-  @internalProperty() private _layoutObject: LayoutObject = {};
 
   @internalProperty() private _placeholder?: LayoutItem;
 
@@ -74,14 +74,6 @@ export class LitGridLayout extends LitElement {
   private _oldItemIndex?: number;
 
   private _resizeObserver?: ResizeObserver;
-
-  get _childrenElements(): LayoutItemElement[] {
-    return this.items.concat(
-      ...Array.prototype.filter.call(this.children, (e: LayoutItemElement) =>
-        e.classList.contains("grid-item")
-      )
-    );
-  }
 
   get _layoutHeight(): number {
     const btm = findLayoutBottom(this._layout);
@@ -108,9 +100,7 @@ export class LitGridLayout extends LitElement {
 
     if (changedProps.has("layout")) {
       this._setupLayout();
-    }
-
-    if (changedProps.has("columns")) {
+    } else if (changedProps.has("columns")) {
       this._updateLayout(this._layout);
     }
 
@@ -118,76 +108,69 @@ export class LitGridLayout extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._layout?.length) {
+    if (!this._layout?.length || !this.itemRenderer) {
       return html``;
     }
 
     return html`
-      ${this._childrenElements.map((element) => {
-        const item = this._layoutObject[element.key];
-        if (!item) {
-          return html``;
-        }
+      ${repeat(
+        this._layout,
+        (item: LayoutItem) => item.key,
+        (item) => {
+          if (
+            !item ||
+            !this._layout.some((layoutItem) => layoutItem.key === item.key)
+          ) {
+            return nothing;
+          }
 
-        return html`
-          <lit-grid-item
-            .width=${item.width}
-            .height=${item.height}
-            .posY=${item.posY}
-            .posX=${item.posX}
-            .minWidth=${item.minWidth || 1}
-            .minHeight=${item.minHeight || 1}
-            .maxWidth=${item.maxHeight}
-            .maxHeight=${item.maxHeight}
-            .key=${item.key}
-            .parentWidth=${this._width!}
-            .columns=${this.columns}
-            .rowHeight=${this.rowHeight}
-            .margin=${this.margin}
-            .containerPadding=${this.containerPadding}
-            .isDraggable=${!this.dragDisabled}
-            .isResizable=${!this.resizeDisabled}
-            .resizeHandle=${this.resizeHandle}
-            .dragHandle=${this.dragHandle}
-            @resizeStart=${this._itemResizeStart}
-            @resize=${this._itemResize}
-            @resizeEnd=${this._itemResizeEnd}
-            @dragStart=${this._itemDragStart}
-            @dragging=${this._itemDrag}
-            @dragEnd=${this._itemDragEnd}
-          >
-            ${element}
-          </lit-grid-item>
-        `;
-      })}
+          return html`
+            <lit-grid-item
+              .width=${item.width}
+              .height=${item.height}
+              .posY=${item.posY}
+              .posX=${item.posX}
+              .minWidth=${item.minWidth || 1}
+              .minHeight=${item.minHeight || 1}
+              .maxWidth=${item.maxHeight}
+              .maxHeight=${item.maxHeight}
+              .key=${item.key}
+              .parentWidth=${this._width!}
+              .columns=${this.columns}
+              .rowHeight=${this.rowHeight}
+              .margin=${this.margin}
+              .containerPadding=${this.containerPadding}
+              .isDraggable=${!this.dragDisabled}
+              .isResizable=${!this.resizeDisabled}
+              .resizeHandle=${this.resizeHandle}
+              .dragHandle=${this.dragHandle}
+              @resizeStart=${this._itemResizeStart}
+              @resize=${this._itemResize}
+              @resizeEnd=${this._itemResizeEnd}
+              @dragStart=${this._itemDragStart}
+              @dragging=${this._itemDrag}
+              @dragEnd=${this._itemDragEnd}
+            >
+              ${this.itemRenderer!(item.key)}
+            </lit-grid-item>
+          `;
+        }
+      )}
       ${this._renderPlaceHolder()}
     `;
   }
 
   private _setupLayout(): void {
-    const newLayout: Layout = [];
-
-    // Create new Layout
-    // Iterate over all children and find item in prev layout or create new item
-    for (const element of this._childrenElements) {
-      let layoutItem = this.layout!.find((item) => item.key === element.key);
-
-      if (!layoutItem) {
-        const itemProps = element.grid || {
-          width: 1,
-          height: 1,
-          posX: 0,
-          posY: findLayoutBottom(newLayout),
-        };
-
-        layoutItem = { ...itemProps, key: element.key };
-      }
-
-      newLayout.push(layoutItem);
+    if (!this.layout) {
+      throw new Error("Missing layout");
     }
 
-    this._updateLayout(newLayout, true);
-    fireEvent(this, "layout-changed", { layout: this._layout });
+    // Dirty check to avoid endless cycles
+    if (areLayoutsDifferent(this.layout, this._layout)) {
+      this._updateLayout(this.layout, true);
+
+      fireEvent(this, "layout-changed", { layout: this._layout });
+    }
   }
 
   private _updateLayout(
@@ -200,12 +183,6 @@ export class LitGridLayout extends LitElement {
     } else {
       const newLayout = fix ? fixLayoutBounds(layout, this.columns) : layout;
       this._layout = condenseLayout(newLayout);
-    }
-
-    // Create an object so we can quickly find the item in render
-    this._layoutObject = {};
-    for (const item of this._layout) {
-      this._layoutObject[item.key] = item;
     }
   }
 
@@ -237,10 +214,13 @@ export class LitGridLayout extends LitElement {
   }
 
   private _itemResizeEnd(): void {
-    fireEvent(this, "item-changed", {
-      item: this._placeholder,
-      layout: this._layout,
-    });
+    // Dirty check, avoid unnecessary events
+    if (!this.layout || areLayoutsDifferent(this.layout, this._layout)) {
+      fireEvent(this, "item-changed", {
+        item: this._placeholder,
+        layout: this._layout,
+      });
+    }
 
     this._placeholder = undefined;
     this._oldItemLayout = undefined;
@@ -284,10 +264,13 @@ export class LitGridLayout extends LitElement {
   }
 
   private _itemDragEnd(): void {
-    fireEvent(this, "item-changed", {
-      item: this._placeholder,
-      layout: this._layout,
-    });
+    // Dirty check, avoid unnecessary events
+    if (!this.layout || areLayoutsDifferent(this.layout, this._layout)) {
+      fireEvent(this, "item-changed", {
+        item: this._placeholder,
+        layout: this._layout,
+      });
+    }
 
     this._placeholder = undefined;
     this._oldItemLayout = undefined;

@@ -1,16 +1,14 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-
-import { LGLDomEvent, DraggingEvent } from "./types";
-
 import "./lit-draggable";
+import type { DraggingEvent, LGLDomEvent } from "./types";
 import { fireEvent } from "./util/fire-event";
 
 @customElement("lit-draggable-wrapper")

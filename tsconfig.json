@@ -12,6 +12,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "importsNotUsedAsValues": "error",
     "strict": true,
     "noImplicitAny": false,
     "skipLibCheck": true,

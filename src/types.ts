@@ -1,3 +1,5 @@
+import type { TemplateResult } from "lit-html";
+
 export interface LayoutItem {
   width: number;
   height: number;
@@ -66,3 +68,5 @@ export interface MouseTouchLocation {
 }
 
 export type EventHandler<T> = (e: T) => void | false;
+
+export type ItemRenderer = (itemKey: string) => TemplateResult;

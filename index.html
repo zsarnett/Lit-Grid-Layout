@@ -4,104 +4,238 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lit Grid Layout</title>
-    <!-- <script src="dist/lit-grid-layout.js" type="module"></script> -->
     <!-- <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/lit-grid-layout/1.1.0/lit-grid-layout.js?module"
-      type="module"
-    ></script> -->
-    <script
-      src="https://unpkg.com/lit-grid-layout@1.1.0/dist/lit-grid-layout.js?module"
+      src="https://unpkg.com/lit-grid-layout@1.1.10/dist/lit-grid-layout.js?module"
       crossorigin="anonymous"
       type="module"
-    ></script>
+     ></script> -->
   </head>
   <body style="margin: 0;">
-    <div
-      class="layout"
-      style="
-        background-color: #eee;
-        box-sizing: border-box;
-        position: relative;
-      "
-    ></div>
+    <my-app></my-app>
+    <script type="module">
+      import './dist/lit-grid-layout.js';
+      // import {html, LitElement} from 'https://cdn.skypack.dev/pin/lit-element@v2.4.0-1XOpe9DTEoAR5DmPqDi1/lit-element.js' 
+      import { html } from './node_modules/lit-html/lit-html.js';	
+      import { LitElement } from './node_modules/lit-element/lit-element.js';
 
-    <script>
-      function getRandomColor() {
-        var letters = "0123456789ABCDEF";
-        var color = "#";
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+      class MyItem extends LitElement {
+        static get properties () {
+          return {
+            activated: {
+              type: Boolean
+            },
+            title: {
+              type: String
+            }
+          };
         }
-        return color;
+
+        constructor () {
+          super();
+          this.activated = false;
+          if (!this.title) this.title = '';
+        }
+
+        onClick () {
+          this.activated = !this.activated;
+        }
+
+        render () {
+          const itemBackgroundColor = this.activated
+            ? 'lightgreen'
+            : '#ccc';
+          const itemStyle = `background-color: ${itemBackgroundColor};`;
+
+          return html`
+            <style>
+              .lit-grid-item {
+                background-color: #ccc;
+                border: 1px solid black;
+                height: 100%;
+                width: 100%;
+                font-size: 24px;
+                display: flex;
+                position: relative;
+                justify-content: center;
+                align-items: center;
+              }
+
+              .drag-handle {
+                position: absolute;
+                top: 0;
+                left: 0;
+                cursor: move;
+                line-height: 0;
+              }
+            </style>
+            <div
+              class="lit-grid-item"
+              style="${itemStyle}">
+              <span style="cursor: pointer;" @click="${this.onClick}">${this.title}</span>
+              <div class="drag-handle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-grid-dots" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#607D8B" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z"/>
+                  <circle cx="5" cy="5" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="19" cy="5" r="1" />
+                  <circle cx="5" cy="12" r="1" />
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="19" cy="12" r="1" />
+                  <circle cx="5" cy="19" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                  <circle cx="19" cy="19" r="1" />
+                </svg>
+              </div>
+            </div>`;
+        }
       }
 
-      const el = document.createElement("lit-grid-layout");
+      customElements.define('my-item', MyItem);
 
-      const itemArray = [];
-      const itemElementArray = [];
+      function generateRandomLayout (n) {
+        if (n < 0) throw new Error('Number of layout items must be positive');
 
-      for (let i = 0; i < 50; i++) {
-        var y = Math.ceil(Math.random() * 4) + 1;
-        var x = Math.floor(Math.random() * 3) + 1;
-        itemArray.push({
-          posX: 3 * (i % 4),
-          posY: Math.floor(i / 6) * y,
-          width: 3,
-          height: y + 1,
-          // minWidth: i === 10 ? 10 : x,
-          // minHeight: y,
-          // maxHeight: Math.floor(Math.random() * Math.floor(2)) + y + 1,
-          // maxWidth:
-          //   i === 10 ? 15 : Math.floor(Math.random() * Math.floor(2)) + x + 1,
-          key: i.toString(),
-        });
+        const layout = [];
 
-        const itemEl = document.createElement("div");
-        itemEl.classList.add("lit-grid-item");
-        itemEl.key = i.toString();
-        itemEl.style.cssText =
-          "background-color: #ccc; border: 1px solid black; height: 100%; width: 100%; font-size: 24px; display: flex; position: relative; justify-content: center; align-items: center";
+        for (let i = 0; i < n; i++) {
+          var y = Math.ceil(Math.random() * 4) + 1;
+          var x = Math.floor(Math.random() * 3) + 1;
+          layout.push({
+            posX: 3 * (i % 4),
+            posY: Math.floor(i / 6) * y,
+            width: 3,
+            height: y + 1,
+            key: i.toString(),
+          });
+        }
 
-        const number = document.createElement("span");
-        number.innerHTML = i;
-
-        itemEl.appendChild(number);
-
-        const handle = document.createElement("div");
-        handle.classList.add("drag-handle");
-        handle.style.cssText =
-          "position: absolute; top: 0; left: 0; cursor: move; line-height: 0";
-        handle.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-grid-dots" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#607D8B" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z"/>
-          <circle cx="5" cy="5" r="1" />
-          <circle cx="12" cy="5" r="1" />
-          <circle cx="19" cy="5" r="1" />
-          <circle cx="5" cy="12" r="1" />
-          <circle cx="12" cy="12" r="1" />
-          <circle cx="19" cy="12" r="1" />
-          <circle cx="5" cy="19" r="1" />
-          <circle cx="12" cy="19" r="1" />
-          <circle cx="19" cy="19" r="1" />
-        </svg>`;
-
-        itemEl.appendChild(handle);
-        itemElementArray.push(itemEl);
+        return layout;
       }
 
-      el.layout = itemArray;
-      el.items = itemElementArray;
-      el.dragHandle = ".drag-handle";
-      el.sortStyle = "masonry";
-      document.querySelector(".layout").appendChild(el);
+      class MyApp extends LitElement {
+        static get properties () {
+          return {
+            isSunnyMode: {
+              type: Boolean
+            },
+            layout: {
+              type: Array
+            }
+          };
+        }
 
-      // setInterval(() => {
-      //   const array = [6, 9, 12];
-      //   const el = document.querySelector("lit-grid-layout");
-      //   const columns = array[Math.floor(Math.random() * 3)];
-      //   console.log(el, columns);
-      //   el.columns = columns;
-      // }, 5000);
+        constructor () {
+          super();
+          this.isSunnyMode = false;
+
+          this.layout = generateRandomLayout(50);
+        }
+
+        onSunnyButtonClick () {
+          this.isSunnyMode = !this.isSunnyMode;
+        }
+
+        onNewLayoutClick () {
+          this.layout = generateRandomLayout(50);
+        }
+
+        itemRenderer (itemKey) {
+          return html`
+            <my-item
+              .title=${itemKey}>
+            </my-item>
+          `;
+        }
+
+        onLayoutChanged (event) {
+          console.log(event);
+          this.layout = event.detail.layout;
+        }
+
+        render () {
+          const buttonText = this.isSunnyMode ? 'Switch to regular mode' : 'Switch to sunny mode';
+          const layoutBackgroundColor = this.isSunnyMode ? '#ffe493' : '#eee';
+
+          const sortStyle = 'masonry';
+          const dragHandle = '.drag-handle';
+
+          return html`
+            <style>
+              .container {
+                margin: 5em auto auto auto;
+                max-width: 1000px;
+              }
+
+              .highlighted-green {
+                background-color: lightgreen;
+              }
+
+              .buttons-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                margin-top: 2.5em;
+              }
+
+              .layout-button {
+                border: solid darkgrey;
+                color: black;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                background-color: white;
+                margin-left: 1em;
+                margin-right: 1em;
+              }
+            </style>
+            <div class="container">
+              <div>
+                <p>
+                  Click on the item number to activate or deactivate that item, it will turn <span class="highlighted-green">green</span> when activated.
+                </p>
+                <p>
+                  You can press "Switch to sunny mode" to change then app state and force trigger a re-render. Notice that the internal state of items is preserved.
+                </p>
+                <p>
+                  Also, the layout of the parent is reactive. Click "New layout" to change genereate a new layout. Notice again that active items remain active.
+                </p>
+              </div>
+              <div class="buttons-row">
+                <button
+                  class="layout-button"
+                  @click=${this.onSunnyButtonClick}>
+                  ${buttonText}
+                </button>
+                <button
+                  class="layout-button"
+                  @click=${this.onNewLayoutClick}>
+                  New layout
+                </button>
+              </div>
+            </div>
+            <div
+              class="layout"
+              style="
+                background-color: ${layoutBackgroundColor};
+                box-sizing: border-box;
+                position: relative;
+              ">
+              <lit-grid-layout
+                .layout=${this.layout}
+                .dragHandle=${dragHandle}
+                .sortStyle=${sortStyle}
+                .itemRenderer=${this.itemRenderer}
+                @layout-changed=${this.onLayoutChanged}
+                @item-changed=${this.onLayoutChanged}>
+              </lit-grid-layout>
+            </div>`;
+        }
+      }
+      customElements.define('my-app', MyApp);
     </script>
   </body>
 </html>
