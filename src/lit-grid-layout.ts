@@ -100,9 +100,7 @@ export class LitGridLayout extends LitElement {
 
     if (changedProps.has("layout")) {
       this._setupLayout();
-    }
-
-    if (changedProps.has("columns")) {
+    } else if (changedProps.has("columns")) {
       this._updateLayout(this._layout);
     }
 
@@ -164,7 +162,7 @@ export class LitGridLayout extends LitElement {
 
   private _setupLayout(): void {
     if (!this.layout) {
-      throw new Error('Missing "layout"');
+      throw new Error("Missing layout");
     }
 
     // Dirty check to avoid endless cycles
