@@ -26,8 +26,7 @@ export const condenseLayout = (layout: Layout): Layout => {
       );
     }
 
-    item.hasMoved = false;
-
+    delete item.hasMoved;
     condensedLayout.push(item);
 
     returnLayout[layout.indexOf(item)] = item;

@@ -30,6 +30,8 @@ import { getMasonryLayout } from "./util/get-masonry-layout";
 import { installResizeObserver } from "./util/install-resize-observer";
 import { moveItem } from "./util/move-item";
 
+// TODO: Instead of resize handle being a different draggable element. Why not just add a second handle like the Drag and use that
+
 @customElement("lit-grid-layout")
 export class LitGridLayout extends LitElement {
   @property({ type: Array }) public layout?: Layout;
@@ -167,6 +169,7 @@ export class LitGridLayout extends LitElement {
 
     // Dirty check to avoid endless cycles
     if (areLayoutsDifferent(this.layout, this._layout)) {
+      // This is not working
       this._updateLayout(this.layout, true);
 
       fireEvent(this, "layout-changed", { layout: this._layout });
@@ -214,13 +217,18 @@ export class LitGridLayout extends LitElement {
   }
 
   private _itemResizeEnd(): void {
-    // Dirty check, avoid unnecessary events
-    if (!this.layout || areLayoutsDifferent(this.layout, this._layout)) {
-      fireEvent(this, "item-changed", {
-        item: this._placeholder,
-        layout: this._layout,
-      });
+    const newItemLayout = this._layout.find(
+      (item) => item.key === this._oldItemLayout?.key
+    );
+
+    if (!this.layout || this._oldItemLayout === newItemLayout) {
+      return;
     }
+
+    fireEvent(this, "item-changed", {
+      item: this._placeholder,
+      layout: this._layout,
+    });
 
     this._placeholder = undefined;
     this._oldItemLayout = undefined;
@@ -232,7 +240,9 @@ export class LitGridLayout extends LitElement {
       (item) => item.key === ev.currentTarget.key
     );
     this._placeholder = this._layout[itemIndex];
-    this._oldItemLayout = this._layout[itemIndex];
+    this._oldItemLayout = this._layout.find(
+      (item) => item.key === ev.currentTarget.key
+    );
   }
 
   private _itemDrag(ev: LGLItemDomEvent<ItemDraggedEvent>): void {
@@ -247,7 +257,7 @@ export class LitGridLayout extends LitElement {
 
     const newLayout = moveItem(
       [...this._layout],
-      this._oldItemLayout,
+      { ...this._oldItemLayout },
       newPosX,
       newPosY,
       this.columns,
@@ -256,21 +266,24 @@ export class LitGridLayout extends LitElement {
 
     this._updateLayout(newLayout, false, "default");
 
-    this._oldItemLayout = this._layout.find(
+    this._placeholder = this._layout.find(
       (item) => item.key === this._oldItemLayout!.key
     );
-
-    this._placeholder = this._oldItemLayout;
   }
 
   private _itemDragEnd(): void {
-    // Dirty check, avoid unnecessary events
-    if (!this.layout || areLayoutsDifferent(this.layout, this._layout)) {
-      fireEvent(this, "item-changed", {
-        item: this._placeholder,
-        layout: this._layout,
-      });
+    const newItemLayout = this._layout.find(
+      (item) => item.key === this._oldItemLayout!.key
+    );
+
+    if (!this.layout || this._oldItemLayout === newItemLayout) {
+      return;
     }
+
+    fireEvent(this, "item-changed", {
+      item: this._placeholder,
+      layout: this._layout,
+    });
 
     this._placeholder = undefined;
     this._oldItemLayout = undefined;
