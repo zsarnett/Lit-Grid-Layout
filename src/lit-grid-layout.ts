@@ -77,6 +77,10 @@ export class LitGridLayout extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _prevPosX?: number;
+
+  private _prevPosY?: number;
+
   get _layoutHeight(): number {
     const btm = findLayoutBottom(this._layout);
     return (
@@ -255,6 +259,13 @@ export class LitGridLayout extends LitElement {
 
     const { newPosX, newPosY } = ev.detail;
 
+    if (this._prevPosX === newPosX && this._prevPosY === newPosY) {
+      return;
+    }
+
+    this._prevPosX = newPosX;
+    this._prevPosY = newPosY;
+
     const newLayout = moveItem(
       [...this._layout],
       { ...this._oldItemLayout },
@@ -265,7 +276,6 @@ export class LitGridLayout extends LitElement {
     );
 
     this._updateLayout(newLayout, false, "default");
-
     this._placeholder = this._layout.find(
       (item) => item.key === this._oldItemLayout!.key
     );

@@ -15,8 +15,8 @@
     <script type="module">
       import './dist/lit-grid-layout.js';
       // import {html, LitElement} from 'https://cdn.skypack.dev/pin/lit-element@v2.4.0-1XOpe9DTEoAR5DmPqDi1/lit-element.js' 
-      // import { html } from 'lit-html/lit-html.js';	
-      // import { LitElement } from 'lit-element/lit-element.js';
+      import { html } from 'lit-html/lit-html.js';	
+      import { LitElement } from 'lit-element/lit-element.js';
 
       class MyItem extends LitElement {
         static get properties () {
@@ -112,6 +112,9 @@
         return layout;
       }
 
+      
+      const mediaQueryColumns = [12,9,6,2];
+
       class MyApp extends LitElement {
         static get properties () {
           return {
@@ -120,6 +123,9 @@
             },
             layout: {
               type: Array
+            },
+            index: {
+              type: Number
             }
           };
         }
@@ -127,6 +133,9 @@
         constructor () {
           super();
           this.isSunnyMode = false;
+
+          this.index = 0;
+          
 
           this.layout = generateRandomLayout(50);
         }
@@ -137,6 +146,10 @@
 
         onNewLayoutClick () {
           this.layout = generateRandomLayout(50);
+        }
+
+        onColummnClick() {
+          this.index +=1;
         }
 
         itemRenderer (itemKey) {
@@ -215,6 +228,11 @@
                   @click=${this.onNewLayoutClick}>
                   New layout
                 </button>
+                <button
+                  class="layout-button"
+                  @click=${this.onColummnClick}>
+                  + Columns
+                </button>
               </div>
             </div>
             <div
@@ -229,6 +247,7 @@
                 .dragHandle=${dragHandle}
                 .sortStyle=${sortStyle}
                 .itemRenderer=${this.itemRenderer}
+                .columns=${mediaQueryColumns[this.index]}
                 @layout-changed=${this.onLayoutChanged}
                 @item-changed=${this.onLayoutChanged}>
               </lit-grid-layout>

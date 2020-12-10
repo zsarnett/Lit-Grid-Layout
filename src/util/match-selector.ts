@@ -28,12 +28,6 @@ export const matchesSelectorAndParentsTo = (
   while (path.length) {
     const node: Node | null = path.pop() as Node;
 
-    // Testing Shadow Root
-    // eslint-disable-next-line no-console
-    console.log("Element: ", node, " Selector: ", selector);
-    // eslint-disable-next-line no-console
-    console.log("Event:", ev);
-
     if (matchesSelector(node, selector)) {
       return true;
     }

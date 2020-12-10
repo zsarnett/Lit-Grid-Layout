@@ -190,18 +190,20 @@ export class LitGridItem extends LitElement {
       `;
     }
 
-    return html`<div
-      class="grid-item-wrapper ${classMap({
-        dragging: this._isDragging,
-        resizing: this._isResizing,
-        finished: this._firstLayoutFinished,
-      })}"
-      style="transform: translate(${this._itemLeftPX}px, ${this
-        ._itemTopPX}px); width: ${this._itemWidthPX}px; height: ${this
-        ._itemHeightPX}px"
-    >
-      ${gridItemHTML}
-    </div>`;
+    return html`
+      <div
+        class="grid-item-wrapper ${classMap({
+          dragging: this._isDragging,
+          resizing: this._isResizing,
+          finished: this._firstLayoutFinished,
+        })}"
+        style="transform: translate(${this._itemLeftPX}px, ${this
+          ._itemTopPX}px); width: ${this._itemWidthPX}px; height: ${this
+          ._itemHeightPX}px"
+      >
+        ${gridItemHTML}
+      </div>
+    `;
   }
 
   private _resizeStart(): void {

@@ -7,6 +7,10 @@ export const getMasonryLayout = (layout: Layout, columns: number): Layout => {
   const columnHeights: number[] = new Array(columns).fill(0);
 
   for (const item of sortedLayout) {
+    if (item.width > columns) {
+      item.width = columns;
+    }
+
     const itemPostion = getMinItemColumn(item, columnHeights, columns);
 
     const newItem = { ...item, ...itemPostion };
