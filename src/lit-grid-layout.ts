@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import {
   css,
   CSSResult,
@@ -107,7 +108,7 @@ export class LitGridLayout extends LitElement {
     if (changedProps.has("layout")) {
       this._setupLayout();
     } else if (changedProps.has("columns")) {
-      this._updateLayout(this._layout);
+      this._updateLayout(deepClone(this.layout));
     }
 
     this.style.height = `${this._layoutHeight}px`;
@@ -173,9 +174,7 @@ export class LitGridLayout extends LitElement {
 
     // Dirty check to avoid endless cycles
     if (areLayoutsDifferent(this.layout, this._layout)) {
-      // This is not working
       this._updateLayout(this.layout, true);
-
       fireEvent(this, "layout-changed", { layout: this._layout });
     }
   }

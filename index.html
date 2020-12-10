@@ -113,16 +113,13 @@
       }
 
       
-      const mediaQueryColumns = [12,9,6,2];
+      const mediaQueryColumns = [12,9,6,2, 6, 9, 12];
 
       class MyApp extends LitElement {
         static get properties () {
           return {
             isSunnyMode: {
               type: Boolean
-            },
-            layout: {
-              type: Array
             },
             index: {
               type: Number
@@ -136,7 +133,7 @@
 
           this.index = 0;
           
-
+          console.log("generate");
           this.layout = generateRandomLayout(50);
         }
 
@@ -162,10 +159,17 @@
 
         onLayoutChanged (event) {
           console.log(event);
-          this.layout = event.detail.layout;
+          // this.layout = event.detail.layout;
+        }
+
+        updated(props) {
+          console.log("props");
+          console.log(props);
+          console.log(this.layout);
         }
 
         render () {
+          console.log("render", [...this.layout]);
           const buttonText = this.isSunnyMode ? 'Switch to regular mode' : 'Switch to sunny mode';
           const layoutBackgroundColor = this.isSunnyMode ? '#ffe493' : '#eee';
 
